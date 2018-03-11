@@ -45,7 +45,6 @@ public class CustomLinkedListTest {
     @Test
     public void forEachTest() throws Exception {
         long sum = 0;
-        System.out.print(intList.size());
         for (Integer integer : intList) {
             sum += integer;
         }

@@ -16,7 +16,7 @@ public class CustomLinkedList<E> implements List<E> {
 
 
     class Item<E> implements Iterator<E> {
-        int cur;
+        private int cur;
 
         Item() {
             cur = 0;
