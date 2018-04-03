@@ -2,19 +2,22 @@ package matchmaker;
 
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+
 @Component
+@Scope("prototype")
 public class MatchMakerDaemon implements Runnable {
 
     @Autowired
-    private BlockingQueue<String> playersQueue;
+    private ArrayList<BlockingQueue<String>> playersQueues;
     @Autowired
     private OkHttpClient client;
     @Autowired
@@ -22,15 +25,23 @@ public class MatchMakerDaemon implements Runnable {
     @Autowired
     private MatchMakerRepository repository;
 
+    private int queueNumber;
+
     private static final String PROTOCOL = "http://";
     private static final String HOST = "localhost";
     private static final String PORT = ":8090";
     private static int MAX_NUMBER_OF_PLAYERS = 4;
 
+    /*
     @PostConstruct
     public void activation(){
         Thread thread = new Thread(this);
         thread.start();
+    }
+    */
+
+    public void setQueueNumber (int queueNumber) {
+        this.queueNumber = queueNumber;
     }
 
     @Override
@@ -47,9 +58,9 @@ public class MatchMakerDaemon implements Runnable {
 
         while (!Thread.interrupted()){
 
-            if (!playersQueue.isEmpty()){
+            if (!playersQueues.get(queueNumber).isEmpty()){
                 try {
-                    players[index++] = playersQueue.poll(10_000, TimeUnit.SECONDS);
+                    players[index++] = playersQueues.get(queueNumber).poll(10_000, TimeUnit.SECONDS);
                 } catch (InterruptedException e){
                     return;
                 }
