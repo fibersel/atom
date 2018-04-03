@@ -33,7 +33,7 @@ public class TestClient implements Runnable{
             response = client.newCall(request).execute();
             Assert.assertTrue(response.code() == 200);
             Document document = Jsoup.parse(response.body().string());
-            System.out.println(document.getElementById("id").val());
+            System.out.println(document.getElementById("id").text());
         } catch (IOException e){
         }
     }

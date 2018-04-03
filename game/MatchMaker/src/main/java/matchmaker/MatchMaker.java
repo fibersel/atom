@@ -48,9 +48,9 @@ public class MatchMaker {
         Long id = playersId.get(name);
         try {
             File file = new File("src/main/resources/static/connection.html");
-            document = Jsoup.parse(file , "ISO-8859-1");
+            document = Jsoup.parse(file , "UTF-8");
             Element element = document.getElementById("id");
-            element.val(id.toString());
+            element.text(id.toString());
             return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(document.toString());
         } catch (IOException e) {
             System.out.println("Failed to parse HTML!");
