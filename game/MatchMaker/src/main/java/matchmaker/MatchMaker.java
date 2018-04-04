@@ -46,16 +46,17 @@ public class MatchMaker {
         while (!playersId.containsKey(name))
             Thread.sleep(10);
         Long id = playersId.get(name);
-        try {
-            File file = new File("src/main/resources/static/connection.html");
-            document = Jsoup.parse(file , "UTF-8");
-            Element element = document.getElementById("id");
-            element.text(id.toString());
-            return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(document.toString());
-        } catch (IOException e) {
-            System.out.println("Failed to parse HTML!");
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok().body(id.toString());
+//        try {
+//            File file = new File("src/main/resources/static/connection.html");
+//            document = Jsoup.parse(file , "UTF-8");
+//            Element element = document.getElementById("id");
+//            element.text(id.toString());
+//            return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(document.toString());
+//        } catch (IOException e) {
+//            System.out.println("Failed to parse HTML!");
+//            return ResponseEntity.badRequest().build();
+//        }
     }
 
 
