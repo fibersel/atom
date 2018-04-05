@@ -17,14 +17,14 @@ public class MatchMakerRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public MatchMakerRepository(JdbcTemplate jdbcTemplate) {
+    MatchMakerRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
      * Returns user's rank. If it is a new user, adds new user to DB and returns 0.
      */
-    public int getUserRank(String userName) {
+    int getUserRank(String userName) {
         Object[] param = {userName};
         List<Integer> resultList = jdbcTemplate.query("SELECT rank FROM users WHERE login = ?", param,
                 (rs, rowNum) -> rs.getInt("rank"));
@@ -35,7 +35,7 @@ public class MatchMakerRepository {
         return resultList.get(0);
     }
 
-    public void saveGameSession(long sesionId, String[] userLogins) {
+    void saveGameSession(long sesionId, String[] userLogins) {
         Object[] sessionData = {sesionId, new Date()};
         jdbcTemplate.update("INSERT INTO game_sessions (id, start_date_time) VALUES (?, ?)", sessionData);
 
@@ -44,11 +44,11 @@ public class MatchMakerRepository {
             Object[] param = {sesionId, login};
             params.add(param);
         }
-        jdbcTemplate.batchUpdate("INSERT INTO game_sessions_to_users (game_session_id, user_login) VALUES (?, ?)",
-                params);
+        jdbcTemplate.batchUpdate("INSERT INTO game_sessions_to_users (game_session_id, user_id) " +
+                        "SELECT ?, id FROM users WHERE login = ?", params);
     }
 
-    private void saveLogin(String login) {
+    void saveLogin(String login) {
         Object[] param = {login};
         jdbcTemplate.update("INSERT INTO users (login) VALUES (?)", param);
     }

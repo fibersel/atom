@@ -48,4 +48,32 @@ public class RepositoryTest {
         int gotRank = repository.getUserRank(existentLogin);
         Assert.assertTrue(expectedRank == gotRank);
     }
+
+    @Test
+    public void saveSessionTest() {
+        MatchMakerRepository repository = new MatchMakerRepository(jdbcTemplate);
+        String[] logins = {"login1", "login2", "login3"};
+        long sessionId = 404L;
+
+        for (String login : logins) {
+            repository.saveLogin(login);
+        }
+
+        repository.saveGameSession(sessionId, logins);
+
+        Object[] param = {sessionId};
+        Integer sessionCount = jdbcTemplate.query("SELECT count(*) as count FROM game_sessions WHERE id = ?",
+                param, (rs, num) -> rs.getInt("count"))
+                .get(0);
+        Assert.assertTrue(sessionCount.equals(1));
+
+        for (String login : logins) {
+            Object[] parameter = {login};
+            Integer loginCount = jdbcTemplate.query("SELECT count(*) as count FROM game_sessions_to_users t " +
+                            "JOIN users u on t.user_id = u.id WHERE u.login = ?",
+                    parameter, (rs, num) -> rs.getInt("count"))
+                    .get(0);
+            Assert.assertTrue(loginCount.equals(1));
+        }
+    }
 }
