@@ -1,1 +1,2 @@
-CREATE TABLE game_sessions (id bigint, start_date_time timestamp);
+CREATE TABLE game_sessions (id bigint not null primary key,
+                            start_date_time timestamp);
