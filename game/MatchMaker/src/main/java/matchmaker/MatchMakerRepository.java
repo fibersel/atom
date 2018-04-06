@@ -26,7 +26,7 @@ public class MatchMakerRepository {
      */
     int getUserRank(String userName) {
         Object[] param = {userName};
-        List<Integer> resultList = jdbcTemplate.query("SELECT rank FROM users WHERE login = ?", param,
+        List<Integer> resultList = jdbcTemplate.query("SELECT rank FROM mm.users WHERE login = ?", param,
                 (rs, rowNum) -> rs.getInt("rank"));
         if (resultList.size() == 0) {
             saveLogin(userName);
@@ -37,20 +37,20 @@ public class MatchMakerRepository {
 
     void saveGameSession(long sesionId, String[] userLogins) {
         Object[] sessionData = {sesionId, new Date()};
-        jdbcTemplate.update("INSERT INTO game_sessions (id, start_date_time) VALUES (?, ?)", sessionData);
+        jdbcTemplate.update("INSERT INTO mm.game_sessions (id, start_date_time) VALUES (?, ?)", sessionData);
 
         List<Object[]> params = new ArrayList<>(userLogins.length);
         for (String login : userLogins) {
             Object[] param = {sesionId, login};
             params.add(param);
         }
-        jdbcTemplate.batchUpdate("INSERT INTO game_sessions_to_users (game_session_id, user_id) " +
-                        "SELECT ?, id FROM users WHERE login = ?", params);
+        jdbcTemplate.batchUpdate("INSERT INTO mm.game_sessions_to_users (game_session_id, user_id) " +
+                        "SELECT ?, id FROM mm.users WHERE login = ?", params);
     }
 
     void saveLogin(String login) {
         Object[] param = {login};
-        jdbcTemplate.update("INSERT INTO users (login) VALUES (?)", param);
+        jdbcTemplate.update("INSERT INTO mm.users (login) VALUES (?)", param);
     }
 
 }

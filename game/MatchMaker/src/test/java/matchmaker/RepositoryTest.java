@@ -8,6 +8,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 /**
  * Created by imakarycheva on 04.04.18.
@@ -20,7 +21,7 @@ public class RepositoryTest {
     public static void setUp() {
         DataSource db = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScript("data.sql")
+                .addScript("schema.sql")
                 .build();
         jdbcTemplate = new JdbcTemplate(db);
     }
@@ -32,7 +33,7 @@ public class RepositoryTest {
         int rank = repository.getUserRank(newLogin);
         Assert.assertTrue(rank == 0);
         Object[] param = {newLogin};
-        Integer userCount = jdbcTemplate.query("SELECT count(*) as count FROM users WHERE login = ?", param,
+        Integer userCount = jdbcTemplate.query("SELECT count(*) as count FROM mm.users WHERE login = ?", param,
                 (rs, num) -> rs.getInt("count"))
                 .get(0);
         Assert.assertTrue(userCount.equals(1));
@@ -44,7 +45,7 @@ public class RepositoryTest {
         String existentLogin = "EXISTENT_USER";
         int expectedRank = 100;
         Object[] params = {existentLogin, expectedRank};
-        jdbcTemplate.update("INSERT INTO users (login, rank) VALUES (?,?)", params);
+        jdbcTemplate.update("INSERT INTO mm.users (login, rank) VALUES (?,?)", params);
         int gotRank = repository.getUserRank(existentLogin);
         Assert.assertTrue(expectedRank == gotRank);
     }
@@ -52,7 +53,7 @@ public class RepositoryTest {
     @Test
     public void saveSessionTest() {
         MatchMakerRepository repository = new MatchMakerRepository(jdbcTemplate);
-        String[] logins = {"login1", "login2", "login3"};
+        String[] logins = {"saveSessionTest1", "saveSessionTest2", "saveSessionTest3"};
         long sessionId = 404L;
 
         for (String login : logins) {
@@ -62,18 +63,17 @@ public class RepositoryTest {
         repository.saveGameSession(sessionId, logins);
 
         Object[] param = {sessionId};
-        Integer sessionCount = jdbcTemplate.query("SELECT count(*) as count FROM game_sessions WHERE id = ?",
+        Integer sessionCount = jdbcTemplate.query("SELECT count(*) as count FROM mm.game_sessions WHERE id = ?",
                 param, (rs, num) -> rs.getInt("count"))
                 .get(0);
         Assert.assertTrue(sessionCount.equals(1));
 
-        for (String login : logins) {
-            Object[] parameter = {login};
-            Integer loginCount = jdbcTemplate.query("SELECT count(*) as count FROM game_sessions_to_users t " +
-                            "JOIN users u on t.user_id = u.id WHERE u.login = ?",
-                    parameter, (rs, num) -> rs.getInt("count"))
-                    .get(0);
-            Assert.assertTrue(loginCount.equals(1));
+        List<String> gotLogins = jdbcTemplate.query("SELECT login FROM mm.users t " +
+                        "JOIN mm.game_sessions_to_users t2 ON t.id = t2.user_id WHERE t2.game_session_id = ? " +
+                        "ORDER BY t.login", param, (rs, num) -> rs.getString("login"));
+        Assert.assertEquals(logins.length, gotLogins.size());
+        for (int i = 0; i < logins.length; i++) {
+            Assert.assertEquals(logins[i], gotLogins.get(i));
         }
     }
 }

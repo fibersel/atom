@@ -29,7 +29,6 @@ public class MatchMakerTest {
     private static final int NUMBER_OF_REQESTS = 16;
 
     @Test
-    @Ignore
     public void matchMakerTest() throws InterruptedException{
         Collection<Thread> list = new LinkedList<>();
         int rank = 5;
