@@ -30,6 +30,15 @@
                     url(data:image/png;base64,iVBORw0KGg[...]QmCC);
 }
 
+li {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+li:hover {
+  color: #fff8ba;
+}
+
 /* */
 
 .button.blue{
