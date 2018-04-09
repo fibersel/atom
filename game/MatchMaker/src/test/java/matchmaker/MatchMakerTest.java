@@ -53,8 +53,8 @@ public class MatchMakerTest {
         Assert.assertTrue(ctr2 == NUMBER_OF_REQESTS);
     }
 
-    @Test
     @Ignore
+    @Test
     public void matchMakerIncompleteSessionTest() throws InterruptedException{
         Collection<Thread> list = new LinkedList<>();
         for (int i = 0;i < 7;i++) {

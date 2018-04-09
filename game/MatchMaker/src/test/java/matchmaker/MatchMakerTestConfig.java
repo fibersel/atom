@@ -17,8 +17,8 @@ public class MatchMakerTestConfig {
     @Bean
     public JdbcTemplate getJdbcTemplate(){
         final String jdbcUrl = "jdbc:postgresql://localhost:5432/postgres";
-        final String username = "fibersell";
-        final String password = "201998";
+        final String username = "svasilyev";
+        final String password = "1111";
         return new JdbcTemplate(DataSourceBuilder.create().url(jdbcUrl).username(username).password(password).build());
     }
 
