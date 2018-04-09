@@ -51,7 +51,6 @@ public class MatchMakerDaemon implements Runnable {
         while (!Thread.interrupted()){
 
             if (!playersQueue.isEmpty()){
-                System.out.println("YET ANPTHER USER,QID:" + Thread.currentThread().getName());
                 try {
                     players[index++] = playersQueue.poll(10_000, TimeUnit.SECONDS);
                 } catch (InterruptedException e){
