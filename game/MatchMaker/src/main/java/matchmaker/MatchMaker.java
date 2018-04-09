@@ -1,6 +1,7 @@
 package matchmaker;
 
 import matchmaker.monitoring.QueueState;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +72,7 @@ public class MatchMaker {
         Long id = playersId.get(name);
         return ResponseEntity.ok().body(id.toString());
     }
+
 
     public List<QueueState> getQueueStateList() {
         ArrayList<QueueState> result = new ArrayList<>(RANK_NUMBER);

@@ -1,5 +1,6 @@
 package matchmaker;
 
+
 import matchmaker.monitoring.SessionData;
 import matchmaker.monitoring.UserData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ public class MatchMakerRepository {
         return resultList.get(0);
     }
 
+
     void saveGameSession(long sesionId, String[] userLogins) {
         Object[] sessionData = {sesionId, new Date()};
         jdbcTemplate.update("INSERT INTO mm.game_sessions (id, start_date_time) VALUES (?, ?)", sessionData);
@@ -50,6 +52,7 @@ public class MatchMakerRepository {
             Object[] param = {sesionId, login};
             params.add(param);
         }
+
         jdbcTemplate.batchUpdate("INSERT INTO mm.game_sessions_to_users (game_session_id, user_id) " +
                         "SELECT ?, id FROM mm.users WHERE login = ?", params);
     }

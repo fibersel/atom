@@ -39,6 +39,7 @@ public class TestClient implements Runnable{
         Object[] param = {name,rank};
         Long id;
         jdbcTemplate.update("INSERT INTO mm.users (login,rank) VALUES (?,?)",param);
+
         Response response;
         MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
         Request request = new Request.Builder()
