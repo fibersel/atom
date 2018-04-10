@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 
+
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @ComponentScan
@@ -28,6 +29,7 @@ public class MatchMakerTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
+
     private ConcurrentHashMap<Long,Integer> returnedRequests;
 
     private static final int NUMBER_OF_REQESTS_TEST_1 = 16;
@@ -54,6 +56,7 @@ public class MatchMakerTest {
         for (Long key: returnedRequests.keySet())
             ctr2 += returnedRequests.get(key);
         System.out.println(ctr2);
+
         Assert.assertTrue(ctr2 == NUMBER_OF_REQESTS_TEST_1);
     }
 

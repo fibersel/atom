@@ -60,6 +60,7 @@ public class MatchMakerDaemon implements Runnable {
                     return;
                 }
                 numberOfPlayers++;
+
                 if (numberOfPlayers == 1) {
                     lastTime = System.nanoTime();
                 }
@@ -89,6 +90,7 @@ public class MatchMakerDaemon implements Runnable {
                 for(String names: playersInThisSession)
                     playersId.put(names, id);
                 repository.saveGameSession(id, playersInThisSession);
+
             }
         }
     }
