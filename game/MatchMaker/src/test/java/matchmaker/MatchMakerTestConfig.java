@@ -12,13 +12,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MatchMakerTestConfig {
 
     @Bean
-    public Hashtable<Long,Integer> returnedRequests(){ return new Hashtable<>(); }
+    public ConcurrentHashMap<Long,Integer> returnedRequests(){ return new ConcurrentHashMap<>(); }
 
     @Bean
     public JdbcTemplate getJdbcTemplate(){
         final String jdbcUrl = "jdbc:postgresql://localhost:5432/postgres";
-        final String username = "svasilyev";
-        final String password = "1111";
+        final String username = "fibersell";
+        final String password = "201998";
         return new JdbcTemplate(DataSourceBuilder.create().url(jdbcUrl).username(username).password(password).build());
     }
 
