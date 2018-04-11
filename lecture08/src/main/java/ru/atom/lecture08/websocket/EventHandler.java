@@ -6,6 +6,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import ru.atom.lecture08.websocket.message.Message;
+import ru.atom.lecture08.websocket.util.JsonHelper;
 
 @Component
 public class EventHandler extends TextWebSocketHandler implements WebSocketHandler {
@@ -18,6 +20,18 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+
+        System.out.println("received " + message.toString());
+
+        Message msg = JsonHelper.fromJson(message.getPayload(), Message.class);
+
+
+
+        System.out.println("parsed " + msg);
+
+
+
+        session.sendMessage(new TextMessage("{ \"history\": [ \"ololo\", \"2\" ] }"));
         System.out.println("Received " + message.toString());
     }
 
