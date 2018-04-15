@@ -228,7 +228,7 @@ https://github.com/sockjs/sockjs-client
 
     function onScroll() {
         var scrollTop = $('#history').scrollTop()
-        if (scrollTop <= 0) {
+        if (scrollTop == 0) {
             var top = JSON.stringify(
             {
                 "topic" : "Top",
