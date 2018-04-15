@@ -88,6 +88,15 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
                 session.sendMessage(new TextMessage(JsonHelper.toJson(online)));
 
                 break;
+
+            case "Top":
+                Map<String,String> top = new HashMap<>(4);
+                top.put("topic", Topic.Top.toString());
+                top.put("data", "You reached top\n");
+                session.sendMessage(new TextMessage(JsonHelper.toJson(top)));
+                System.out.println("User scrolled to top");
+                break;
+
             default:
                 break;
         }
