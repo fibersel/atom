@@ -97,7 +97,7 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
         System.out.println("Socket Closed: [" + closeStatus.getCode() + "] " + closeStatus.getReason());
         User user = (User)session.getAttributes().get("sender");
-        userDao.refresh(user.setOnline((short)0));
+        userDao.setLoggedOut(user);
         super.afterConnectionClosed(session, closeStatus);
     }
 
