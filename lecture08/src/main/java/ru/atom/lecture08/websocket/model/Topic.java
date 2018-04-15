@@ -10,5 +10,6 @@ public enum Topic {
     Say,
     Logout,
     History,
-    Updates
+    Updates,
+    Users
 }

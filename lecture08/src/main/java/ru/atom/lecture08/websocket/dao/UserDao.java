@@ -34,6 +34,18 @@ public class UserDao {
         }
     }
 
+    public String getUsersOnline() {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<User> userCriteria = cb.createQuery(User.class);
+        Root<User> userRoot = userCriteria.from(User.class);
+        userCriteria.select(userRoot);
+        userCriteria.where(cb.equal(userRoot.get("online"), 1));
+        List<User> list = em.createQuery(userCriteria).getResultList();
+        return list.stream()
+                .map(User::getLogin)
+                .reduce("", (e1,e2) -> e1 + "\n" + e2);
+    }
+
 
     public void refresh(User user) {
         em.merge(user);
