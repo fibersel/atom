@@ -152,7 +152,9 @@ https://github.com/sockjs/sockjs-client
 
 
         sock.onmessage = function (e) {
+            console.log(e)
             console.log(e.data);
+            console.log(e.topic)
             // check topic if you will provide other than "history"
             setHistory(e.data);
         }
@@ -178,9 +180,19 @@ https://github.com/sockjs/sockjs-client
     }
 
     function setHistory(data) {
-        if (data != "") {
-            $("#history").append(data.replace(/\n/g, "<br />"));
-            $("#history").scrollTop($("#history")[0].scrollHeight);
+        var dataObj = JSON.parse(data);
+        if ("History" == dataObj.topic) {
+            if ("" != dataObj.data) {
+                $("#history").append(dataObj.data.replace(/\n/g, "<br />"));
+                $("#history").scrollTop($("#history")[0].scrollHeight);
+            }
+        } else if ("Top" == dataObj.topic) {
+            if ("" != dataObj.data) {
+                $("#history").prepend(dataObj.data.replace(/\n/g, "<br />"));
+            }    
+        } else if ("Users" == dataObj.topic) {
+            $("#kek").html("Сейчас онлайн<br />")
+            $("#kek").append(dataObj.data.replace(/\n/g, "<br />"));
         }
     }
 
