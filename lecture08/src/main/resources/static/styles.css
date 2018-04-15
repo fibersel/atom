@@ -64,6 +64,19 @@
     padding-bottom: 0;
 }
 
+#logout {
+    background: #336666;
+    padding: 10px;
+    padding-bottom: 0;
+    position: absolute;
+    width: 100%;
+}
+
+.float-right {
+    float: right;
+    width: 20%;
+}
+
 #body {
     padding: 10px;
     padding-top: 0;

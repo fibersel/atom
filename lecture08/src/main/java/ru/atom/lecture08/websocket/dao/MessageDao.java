@@ -34,8 +34,8 @@ public class MessageDao {
 
 
     public List<Message> loadHistory(Date date) {
-        if(msgQueue.peek().isLaterThan(date))
-            return msgQueue.stream().filter(e->e.isLaterThan(date))
+        if (msgQueue.peek().isLaterThan(date))
+            return msgQueue.stream().filter(e -> e.isLaterThan(date))
                     .collect(Collectors.toList());
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Message> messageCriteria = cb.createQuery(Message.class);
