@@ -6,8 +6,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Collection;
@@ -18,8 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 @RunWith(SpringRunner.class)
-@EnableAutoConfiguration
-@ComponentScan
+//@EnableAutoConfiguration
+//@ComponentScan
+@Import(MatchMakerTestConfig.class)
+@WebMvcTest
 public class MatchMakerTest {
 
     @Autowired
@@ -29,7 +33,6 @@ public class MatchMakerTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-
     private ConcurrentHashMap<Long,Integer> returnedRequests;
 
     private static final int NUMBER_OF_REQESTS_TEST_1 = 16;
@@ -57,7 +60,9 @@ public class MatchMakerTest {
             ctr2 += returnedRequests.get(key);
         System.out.println(ctr2);
 
-        Assert.assertTrue(ctr2 == NUMBER_OF_REQESTS_TEST_1);
+        //Assert.assertTrue(ctr2 == NUMBER_OF_REQESTS_TEST_1);
+        Assert.assertTrue(String.format("Expected %d, got %d", NUMBER_OF_REQESTS_TEST_1, ctr2),
+                ctr2 == NUMBER_OF_REQESTS_TEST_1);
     }
 
 
