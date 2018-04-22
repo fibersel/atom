@@ -3,7 +3,7 @@ package model;
 /**
  * Created by imakarycheva on 22.04.18.
  */
-public class Bonus {
+public class Bonus implements Tickable {
     private final String type = "Bonus";
     private final int id;
     private final Point position;
@@ -25,5 +25,10 @@ public class Bonus {
 
     public BonusType getBonusType() {
         return bonusType;
+    }
+
+    @Override
+    public void tick(long elapsed) {
+        
     }
 }
