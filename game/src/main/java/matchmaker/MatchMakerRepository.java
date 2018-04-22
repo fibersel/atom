@@ -62,7 +62,7 @@ public class MatchMakerRepository {
         jdbcTemplate.update("INSERT INTO mm.users (login) VALUES (?)", param);
     }
 
-    long getLastSessionId() {
+    public long getLastSessionId() {
         return jdbcTemplate.query("SELECT max(s.id) as res FROM mm.game_sessions s",
             (rs, num) -> rs.getLong("res")).get(0);
     }
