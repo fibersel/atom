@@ -206,6 +206,7 @@ thread2 -> |||||||||||||||||||||||||||||||||||||||||||**[acq l1]** sync on l1 **
 they say [release l1] **synchronizes with** [acquire l1] 
 
 ---
+
 ## What does it mean?
 To see changes in shared variable you **must**:
 1. synchronize **both** reads and writes of variable
@@ -218,6 +219,12 @@ To see changes in shared variable you **must**:
 **Other myths that are not true**:  
 https://shipilev.net/blog/2016/close-encounters-of-jmm-kind/#_wishful_thinking_hold_my_beer_while_i_am
 
+---
+
+## Happens-before relation
+More formally, this is defined with **synchronizes-with** and **happens-before** relations  
+https://docs.oracle.com/javase/specs/jls/se7/html/jls-17.html  
+<img src="lecture11/presentation/assets/img/JMM_happens_before.jpg" alt="monitor" style="width: 600px;"/> 
 
 ---
 ## Deadlock
@@ -436,6 +443,28 @@ http://jmeter.apache.org/
 [JMM Under the hood (deep explanation of JMM)](http://gvsmirnov.ru/blog/tech/2014/02/10/jmm-under-the-hood.html)  
 [What Every Dev Must Know About Multithreaded Apps (Common knowledge)](https://lyle.smu.edu/~coyle/cse8313/handouts.fall06/s04.msdn.multithreading.pdf)  
   
+
+---
+## Practice 2. Billing problem
+> @see ru.atom.lecture11.billing
+
+Need to solve a classic task about money transfer sync.
+
+API:
+```
+curl -X POST 
+     -H "Content-Type: application/x-www-form-urlencoded" 
+     -d 'user=bob&money=42' 
+ "http://localhost:8080/billing/addUser"
+ 
+curl -X POST 
+    -H "Content-Type: application/x-www-form-urlencoded" 
+    -d 'from=alice&to=bob&money=12' 
+ "http://localhost:8080/billing/sendMoney" 
+ 
+curl -X GET 
+ "http://localhost:8080/billing/stat" 
+```
 
 ---
 **Оставьте обратную связь**
