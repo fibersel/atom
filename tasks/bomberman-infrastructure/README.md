@@ -1,7 +1,7 @@
 # Bomberman ifrastructure
 
 We are going to start our game development. 
-Now it's a part to create big part of our infrastructure, including landing page logic and, matchmaker.
+Now it's a part to create big part of our infrastructure, including matchmaker and landing page logic.
 **game server** will be implemented later
 
 ![](top_view.png)
@@ -126,6 +126,7 @@ Each request will be processed in separate thread.
 
 ## Deadline and HowTo?
 - `git checkout -b matchmaker` and work in this branch
+- create `game` directory in the root of repository and write code in this folder (travis-ci will build this directory)
 - Deadline: **09.04** lecture.
 - This is team task (3-2 persons, **single submissions are not aloud**) 
 - Procedure:
