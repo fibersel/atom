@@ -1,7 +1,6 @@
-package bomberman.gameService;
+package bomberman.gameservice;
 
 import bomberman.matchmaker.MatchMakerRepository;
-import bomberman.model.Character;
 import bomberman.model.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -58,12 +57,12 @@ public class GameService {
     }
 
 
-    public int addPlayer(Long gameId, WebSocketSession session,String owner){
+    public int addPlayer(Long gameId, WebSocketSession session,String owner) {
         int playerNum = games.get(gameId).addCharacter(session,owner);
         return playerNum;
     }
 
-    public BlockingQueue<Message> getQueue(Long gameId){
+    public BlockingQueue<Message> getQueue(Long gameId) {
         return gameQueues.get(gameId);
     }
 

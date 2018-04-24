@@ -1,4 +1,4 @@
-package bomberman.gameService;
+package bomberman.gameservice;
 
 import bomberman.model.Message;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +20,12 @@ public class GameServiceConfig implements WebSocketConfigurer {
     private ApplicationContext ctx;
 
     @Bean(name = "queues")
-    public ConcurrentHashMap<Long,BlockingQueue<Message>> getGamesQueueMap(){
+    public ConcurrentHashMap<Long,BlockingQueue<Message>> getGamesQueueMap() {
         return new ConcurrentHashMap<>();
     }
 
     @Bean(name = "games")
-    public ConcurrentHashMap<Long,GameSession> getGamesMap(){
+    public ConcurrentHashMap<Long,GameSession> getGamesMap() {
         return new ConcurrentHashMap<>();
     }
 

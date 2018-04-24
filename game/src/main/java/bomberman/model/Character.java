@@ -1,6 +1,6 @@
 package bomberman.model;
 
-public class Character implements Tickable{
+public class Character implements Tickable {
     private Point position;
     private int speed;
     private int range;
@@ -31,11 +31,11 @@ public class Character implements Tickable{
         this.position.setY(y);
     }
 
-    public void kill(){
+    public void kill() {
         this.alive = false;
     }
 
-    public Point getPosition(){
+    public Point getPosition() {
         return position;
     }
 

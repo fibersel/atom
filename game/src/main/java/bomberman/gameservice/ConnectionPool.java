@@ -1,4 +1,4 @@
-package bomberman.gameService;
+package bomberman.gameservice;
 
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -16,7 +16,10 @@ public class ConnectionPool {
     }
 
     public void broadcast(String msg) throws IOException {
-        for(WebSocketSession session: sessions)
+        for (WebSocketSession session : sessions) {
             session.sendMessage(new TextMessage(msg));
+
+        }
+
     }
 }

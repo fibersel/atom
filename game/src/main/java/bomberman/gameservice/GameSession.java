@@ -1,4 +1,4 @@
-package bomberman.gameService;
+package bomberman.gameservice;
 
 import bomberman.model.Character;
 import org.springframework.web.socket.WebSocketSession;
@@ -6,7 +6,7 @@ import org.springframework.web.socket.WebSocketSession;
 import java.util.concurrent.BlockingQueue;
 
 
-public class GameSession implements Runnable{
+public class GameSession implements Runnable {
 
     private Long gameId;
     private BlockingQueue inputQueue;
@@ -15,11 +15,11 @@ public class GameSession implements Runnable{
     private int connectionsNum;
     private ConnectionPool pool;
 
-    public boolean isReady(){
+    public boolean isReady() {
         return numOfPlayers == connectionsNum;
     }
 
-    GameSession(long id, BlockingQueue queue,int numberOfPlayers){
+    GameSession(long id, BlockingQueue queue,int numberOfPlayers) {
         this.inputQueue = queue;
         this.gameId = id;
         this.numOfPlayers = numberOfPlayers;
@@ -28,9 +28,9 @@ public class GameSession implements Runnable{
         this.pool = new ConnectionPool();
     }
 
-    public int addCharacter(WebSocketSession session,String owner){
+    public int addCharacter(WebSocketSession session,String owner) {
         pool.setSession(session);
-        switch (connectionsNum){
+        switch (connectionsNum) {
             case 0:
                 charList[connectionsNum++] = new Character(10,10,owner);
                 break;
@@ -43,15 +43,17 @@ public class GameSession implements Runnable{
             case 3:
                 charList[connectionsNum++] = new Character(710,550,owner);
                 break;
+            default:
+                break;
         }
         return connectionsNum;
     }
 
-    public void run(){
+    public void run() {
         gameLoop();
     }
 
-    private void gameLoop(){
+    private void gameLoop() {
         while (!Thread.currentThread().isInterrupted()){
 
         }
