@@ -53,18 +53,17 @@ public class BillingResource {
         if (fromUser == null || toUser == null) {
             return ResponseEntity.badRequest().body("");
         }
-        if (!userToMoney.containsKey(fromUser) || !userToMoney.containsKey(toUser)) {
-            return ResponseEntity.badRequest().body("No such user\n");
+        synchronized (userToMoney) {
+            if (!userToMoney.containsKey(fromUser) || !userToMoney.containsKey(toUser)) {
+                return ResponseEntity.badRequest().body("No such user\n");
+            }
         }
-
         Account fromUserAcc = userToMoney.get(fromUser);
         if (fromUserAcc.getMoney() < money) {
             return ResponseEntity.badRequest().body("Not enough money to send\n");
         }
-        synchronized (this) {
-            fromUserAcc.setMoney(fromUserAcc.getMoney() - money);
-            userToMoney.get(toUser).setMoney(userToMoney.get(toUser).getMoney() + money);
-        }
+        fromUserAcc.setMoney(fromUserAcc.getMoney() - money);
+        userToMoney.get(toUser).setMoney(userToMoney.get(toUser).getMoney() + money);
         return ResponseEntity.ok("Send success\n");
     }
 
