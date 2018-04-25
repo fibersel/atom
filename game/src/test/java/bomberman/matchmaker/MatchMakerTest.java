@@ -58,7 +58,7 @@ public class MatchMakerTest {
             thread.join();
         }
 
-        for (Long key: mapCounter.keySet()){
+        for (Long key: mapCounter.keySet()) {
             Assert.assertTrue(mapCounter.get(key).intValue() == RANK_THRESHOLD_TEST_1);
         }
 
@@ -83,7 +83,7 @@ public class MatchMakerTest {
             thread.join();
         }
 
-        for (Long key: mapCounter.keySet()){
+        for (Long key: mapCounter.keySet()) {
             Assert.assertTrue(mapCounter.get(key).intValue() == RANK_THRESHOLD_TEST_2);
         }
     }

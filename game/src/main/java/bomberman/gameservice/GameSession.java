@@ -65,14 +65,13 @@ public class GameSession implements Runnable {
     }
 
     private void gameLoop() {
-        while (!Thread.currentThread().isInterrupted()){
+        while (!Thread.currentThread().isInterrupted()) {
             long started = System.currentTimeMillis();
             act(FRAME_TIME);
             long elapsed = System.currentTimeMillis() - started;
-            if(elapsed < FRAME_TIME){
+            if (elapsed < FRAME_TIME) {
                 log.info("All tick finish at {} ms", elapsed);
-            }
-            else
+            } else
                 log.info("{}: tick ", tickNumber);
             tickNumber++;
         }

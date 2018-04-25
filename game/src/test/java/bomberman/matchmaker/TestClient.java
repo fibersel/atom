@@ -63,7 +63,7 @@ public class TestClient implements Runnable {
             Assert.assertTrue(response.code() == 200);
             id = Long.parseLong(response.body().string());
             log.info("id: " + id);
-            synchronized (mapCounter){
+            synchronized (mapCounter) {
                 if (!mapCounter.containsKey(id)) {
                     mapCounter.put(id, new AtomicInteger(1));
                     return;

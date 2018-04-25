@@ -1,6 +1,7 @@
 group 'MatchMaker'
 
 
+
 apply plugin: 'java'
 apply plugin: 'checkstyle'
 
@@ -51,5 +52,5 @@ checkstyle {
 
 jar {
     from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    manifest { attributes 'Main-Class': 'bomberman.gameservice.matchmaker.MatchMakerApp' }
+    manifest { attributes 'Main-Class': 'bomberman.BombermanApp' }
 }
