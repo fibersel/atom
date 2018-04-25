@@ -27,7 +27,7 @@ public class MatchMakerTestConfig {
 
 
     @Bean
-    public Map<Long,AtomicInteger> getMap(){
+    public Map<Long,AtomicInteger> getMap() {
         return new ConcurrentHashMap<>();
     }
 
