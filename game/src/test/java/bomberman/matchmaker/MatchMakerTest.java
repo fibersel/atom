@@ -1,6 +1,7 @@
 package bomberman.matchmaker;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class MatchMakerTest {
@@ -58,7 +59,7 @@ public class MatchMakerTest {
             thread.join();
         }
 
-        for (Long key: mapCounter.keySet()){
+        for (Long key: mapCounter.keySet()) {
             Assert.assertTrue(mapCounter.get(key).intValue() == RANK_THRESHOLD_TEST_1);
         }
 
@@ -83,7 +84,7 @@ public class MatchMakerTest {
             thread.join();
         }
 
-        for (Long key: mapCounter.keySet()){
+        for (Long key: mapCounter.keySet()) {
             Assert.assertTrue(mapCounter.get(key).intValue() == RANK_THRESHOLD_TEST_2);
         }
     }
