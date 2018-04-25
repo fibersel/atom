@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Controller
 @RequestMapping("game")
@@ -30,11 +31,11 @@ public class GameService {
     @Resource(name = "queues")
     private ConcurrentHashMap<Long,BlockingQueue<Message>> gameQueues;
 
-    private static volatile Long numOfGame = 0L;
+    private static AtomicLong numOfGame = new AtomicLong(0);
 
     @PostConstruct
     private void init() {
-        numOfGame = repository.getLastSessionId() + 1;
+        numOfGame = new AtomicLong(repository.getLastSessionId());
     }
 
 
@@ -48,7 +49,7 @@ public class GameService {
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity create(@RequestParam("playerCount") int playerCount) {
-        Long id = ++numOfGame;
+        Long id = numOfGame.incrementAndGet();
         BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
         GameSession session = new GameSession(id,queue,playerCount);
         gameQueues.put(id,queue);

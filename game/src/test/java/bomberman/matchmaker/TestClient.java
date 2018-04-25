@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Scope("prototype")
@@ -21,6 +24,8 @@ public class TestClient implements Runnable {
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestClient.class);
 
+    @Autowired
+    private ConcurrentHashMap<Long,AtomicInteger> mapCounter;
 
     private   int rank ;
     private static String PROTOCOL = "http://";
@@ -58,8 +63,14 @@ public class TestClient implements Runnable {
             Assert.assertTrue(response.code() == 200);
             id = Long.parseLong(response.body().string());
             log.info("id: " + id);
-            MatchMakerTest.Start.countDown();
-            MatchMakerTest.Start.await();
+            synchronized (mapCounter){
+                if (!mapCounter.containsKey(id)) {
+                    mapCounter.put(id, new AtomicInteger(1));
+                    return;
+                }
+            }
+            AtomicInteger value = mapCounter.get(id);
+            value.incrementAndGet();
         } catch (Exception e) {
             log.error(e.getMessage());
         }

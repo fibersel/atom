@@ -11,7 +11,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @RunWith(SpringRunner.class)
@@ -24,20 +26,26 @@ public class MatchMakerTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private ConcurrentHashMap<Long,AtomicInteger> mapCounter;
+
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MatchMakerTest.class);
 
     private static final int NUMBER_OF_REQESTS_TEST_1 = 16;
 
-    private static final int NUMBER_OF_REQESTS_TEST_2 = 8;
+    private static final int NUMBER_OF_REQESTS_TEST_2 = 9;
 
-    public static final CountDownLatch Start = new CountDownLatch(NUMBER_OF_REQESTS_TEST_1);
+    private static final int RANK_THRESHOLD_TEST_1 = 4;
+
+    private static final int RANK_THRESHOLD_TEST_2 = 3;
 
     @Test
     public void matchMakerTest() throws InterruptedException {
+        mapCounter.clear();
         Collection<Thread> list = new LinkedList<>();
         int rank = 5;
         for (int i = 0;i < NUMBER_OF_REQESTS_TEST_1;i++) {
-            if (i % 4 == 0 && i > 0)
+            if (i % RANK_THRESHOLD_TEST_1 == 0 && i > 0)
                 rank += 10;
             TestClient client = ctx.getBean(TestClient.class);
             client.setRank(rank);
@@ -45,24 +53,25 @@ public class MatchMakerTest {
             list.add(thread);
             thread.start();
         }
-        int ctr2 = 0;
+
         for (Thread thread:list) {
-            ctr2++;
             thread.join();
         }
 
-        log.info("Counter: " + ctr2);
+        for (Long key: mapCounter.keySet()){
+            Assert.assertTrue(mapCounter.get(key).intValue() == RANK_THRESHOLD_TEST_1);
+        }
 
-        Assert.assertTrue(ctr2 == NUMBER_OF_REQESTS_TEST_1);
     }
 
 
     @Test
     public void matchMakerIncompleteSessionTest() throws InterruptedException {
+        mapCounter.clear();
         Collection<Thread> list = new LinkedList<>();
         int rank = 5;
         for (int i = 0;i < NUMBER_OF_REQESTS_TEST_2;i++) {
-            if (i % 3 == 0 && i > 0)
+            if (i % RANK_THRESHOLD_TEST_2 == 0 && i > 0)
                 Thread.sleep(12_000);
             TestClient client = ctx.getBean(TestClient.class);
             client.setRank(rank);
@@ -70,14 +79,13 @@ public class MatchMakerTest {
             list.add(thread);
             thread.start();
         }
-        int ctr2 = 0;
         for (Thread thread:list) {
-            ctr2++;
             thread.join();
         }
 
-        log.info("Counter: " + Integer.toString(ctr2));
-        Assert.assertTrue(ctr2 == NUMBER_OF_REQESTS_TEST_2);
+        for (Long key: mapCounter.keySet()){
+            Assert.assertTrue(mapCounter.get(key).intValue() == RANK_THRESHOLD_TEST_2);
+        }
     }
 
 
