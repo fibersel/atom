@@ -2,6 +2,7 @@ package bomberman.gameservice;
 
 import bomberman.model.Message;
 import bomberman.util.JsonHelper;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,8 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
     @Autowired
     private ApplicationContext ctx;
 
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ConnectionHandler.class);
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Matcher idMatcher = gameId.matcher(session.getUri().getQuery());
@@ -44,6 +47,7 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        log.info("Got message: {}", message.getPayload());
         Message msg = JsonHelper.fromJson(message.getPayload(),Message.class).setPlayerId(
                 (int)session.getAttributes().get("playerId"));
         BlockingQueue<Message> queue = (BlockingQueue<Message>)session.getAttributes().get("msgQueue");

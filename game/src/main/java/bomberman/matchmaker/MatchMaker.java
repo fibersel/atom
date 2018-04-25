@@ -2,10 +2,12 @@ package bomberman.matchmaker;
 
 import bomberman.matchmaker.monitoring.QueueState;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +40,8 @@ public class MatchMaker {
     private static final int RANK_NUMBER = 4;
     private static final int[] RANK_BORDERS = {10, 20, 30, 40, 50};
 
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(MatchMaker.class);
+
     @PostConstruct
     private void preProcessing() {
         playersQueue = new ArrayList<BlockingQueue<String>>();
@@ -55,12 +59,14 @@ public class MatchMaker {
      *   curl -X POST -i http://localhost:8080/matchmaker/join -d "name=test"
      * */
 
+    @CrossOrigin
     @RequestMapping(
             path = "join",
             method = RequestMethod.POST,
             consumes = org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity join(@RequestParam("name") String name) throws InterruptedException {
         int rank = repository.getUserRank(name);
+        log.info("Got join request from user {} with rank {}", name, rank);
         for (int i = 0; i < RANK_NUMBER; i++) {
             if (rank < RANK_BORDERS[i]) {
                 playersQueue.get(i).offer(name);
@@ -70,6 +76,7 @@ public class MatchMaker {
         while (!playersId.containsKey(name))
             Thread.sleep(10);
         Long id = playersId.get(name);
+        log.info("User {} got gameID {}", name, id);
         return ResponseEntity.ok().body(id.toString());
     }
 
