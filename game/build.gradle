@@ -1,5 +1,8 @@
-group 'MatchMaker'
+plugins {
+    id 'org.springframework.boot' version '2.0.0.RELEASE'
+}
 
+group 'MatchMaker'
 
 
 apply plugin: 'java'
