@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @Component
 public class ConnectionHandler extends TextWebSocketHandler implements WebSocketHandler {
 
-    private static Pattern gameId = Pattern.compile("gameId=(\\d)&");
+    private static Pattern gameId = Pattern.compile("gameId=(\\d+)");
     private static Pattern name = Pattern.compile("name=(.+)");
 
     @Autowired
@@ -29,19 +29,33 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        log.info("Connection established. Got query: {}", session.getUri().getQuery());
         Matcher idMatcher = gameId.matcher(session.getUri().getQuery());
         Matcher nameMatcher = name.matcher(session.getUri().getQuery());
-        Long gameId;
+        Long gameId = 0L;
         int playerId;
-        String name;
-        idMatcher.find();
-        nameMatcher.find();
-        gameId = Long.parseLong(idMatcher.group(1));
-        name = nameMatcher.group(1);
+        String name = "";
+
+        if (idMatcher.find()) {
+            gameId = Long.parseLong(idMatcher.group(1));
+        } else {
+            log.error("Cannot find gameId in query parameters");
+            session.close(CloseStatus.BAD_DATA);
+            return;
+        }
+
+        if (nameMatcher.find()) {
+            name = nameMatcher.group(1);
+        } else {
+            log.error("Cannot find name in query parameters");
+            session.close(CloseStatus.BAD_DATA);
+            return;
+        }
+
         session.getAttributes().put("msgQueue",ctx.getBean(GameService.class).getQueue(gameId));
         playerId = ctx.getBean(GameService.class).addPlayer(gameId,session,name);
         session.getAttributes().put("playerId",playerId);
-        System.out.println(gameId + "    " + name);
+        log.info("Connection with gameID: {}, name: {}", gameId, name);
     }
 
 
@@ -57,6 +71,6 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-
+        log.info("Connection closed. Reason: {}", closeStatus.getReason());
     }
 }
