@@ -56,12 +56,16 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
         playerId = ctx.getBean(GameService.class).addPlayer(gameId,session,name);
         session.getAttributes().put("playerId",playerId);
         log.info("Connection with gameID: {}, name: {}", gameId, name);
+
+        String possessMsg = "{\"topic\":\"POSSESS\",\"data\":" + playerId + "}";
+        session.sendMessage(new TextMessage(possessMsg));
+        log.info("Sent message: " + possessMsg);
     }
 
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        log.info("Got message: {}", message.getPayload());
+        log.debug("Got message: {}", message.getPayload());
         Message msg = JsonHelper.fromJson(message.getPayload(),Message.class).setPlayerId(
                 (int)session.getAttributes().get("playerId"));
         BlockingQueue<Message> queue = (BlockingQueue<Message>)session.getAttributes().get("msgQueue");
