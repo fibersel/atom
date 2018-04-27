@@ -8,11 +8,13 @@ public class Character implements Tickable {
     private final String type = "Pawn";
     private String owner;
     private Direction direction;
+    private final int id;
 
-    public Character(int x, int y, String owner) {
+    public Character(int x, int y, String owner, int id) {
         this.position = new Point(x, y);
         this.alive = true;
         this.owner = owner;
+        this.id = id;
     }
 
     public int getX() {

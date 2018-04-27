@@ -32,8 +32,7 @@ public class GameServiceConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(ctx.getBean(ConnectionHandler.class),"/events/connect")
-                .setAllowedOrigins("*")
-                .withSockJS();
+                .setAllowedOrigins("*");
     }
 
 }
