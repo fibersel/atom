@@ -16,10 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-<<<<<<< HEAD
 
-=======
->>>>>>> ef6c224f051a7e117b7adad6b44eecf710da569b
+
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class MatchMakerTest {

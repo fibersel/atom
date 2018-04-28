@@ -22,6 +22,6 @@ public class ConnectionPool {
         for (WebSocketSession session : sessions) {
             session.sendMessage(new TextMessage(msg));
         }
-        log.debug("Sent message: " + msg);
+        log.info("Sent message: " + msg);
     }
 }

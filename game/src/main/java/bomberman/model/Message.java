@@ -21,11 +21,11 @@ public class Message {
         this.data = data.toString();
     }
 
-    Topic getTopic() {
+    public Topic getTopic() {
         return topic;
     }
 
-    String getData() {
+    public String getData() {
         return data;
     }
 
@@ -33,4 +33,15 @@ public class Message {
         this.playerId = playerId;
         return this;
     }
+
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    @Override
+    public String toString(){
+        return " id: " + playerId + " topic: " + topic + " data: " + data;
+    }
+
+
 }

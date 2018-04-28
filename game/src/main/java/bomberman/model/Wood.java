@@ -1,16 +1,27 @@
 package bomberman.model;
 
+import bomberman.model.geometry.Bar;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Created by imakarycheva on 22.04.18.
  */
-public class Wood implements Tickable {
-    private final String type = "Wood";
-    private final int id;
+public class Wood implements Tickable,Pathless {
     private final Point position;
+    private final int id;
+    private final String type = "Wood";
 
-    public Wood(int id, int x, int y) {
+
+    @JsonIgnore
+    private Bar bar;
+
+
+    private static int size = 48;
+
+    public Wood(int id, Bar bar) {
         this.id = id;
-        position = new Point(x, y);
+        this.bar = bar;
+        this.position = bar.getPosition();
     }
 
     @Override

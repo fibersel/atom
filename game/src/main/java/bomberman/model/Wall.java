@@ -1,22 +1,37 @@
 package bomberman.model;
 
+import bomberman.model.geometry.Bar;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Created by imakarychev on 22.04.18.
  */
-public class Wall implements Tickable {
+public class Wall implements Tickable,Pathless {
+    private final Point position;
+    private final int id;
     private final String type = "Wall";
-    private int id;
-    private Point position;
 
-    public Wall(int id, int x, int y) {
+
+    @JsonIgnore
+    private Bar bar;
+
+
+    private static final int size = 48;
+
+    public Wall(int id,Bar bar ) {
         this.id = id;
-        this.position = new Point(x, y);
+        this.bar = bar;
+        this.position = bar.getPosition();
     }
+
+
+
 
     @Override
     public void tick(long elapsed) {
 
     }
+
 
     public String getType() {
         return type;
@@ -26,7 +41,5 @@ public class Wall implements Tickable {
         return id;
     }
 
-    public Point getPosition() {
-        return position;
-    }
+
 }

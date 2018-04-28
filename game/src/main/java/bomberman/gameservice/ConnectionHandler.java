@@ -13,6 +13,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,7 +70,7 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
         Message msg = JsonHelper.fromJson(message.getPayload(),Message.class).setPlayerId(
                 (int)session.getAttributes().get("playerId"));
         BlockingQueue<Message> queue = (BlockingQueue<Message>)session.getAttributes().get("msgQueue");
-        queue.put(msg);
+        queue.offer(msg,1_000,TimeUnit.MILLISECONDS);
     }
 
 
