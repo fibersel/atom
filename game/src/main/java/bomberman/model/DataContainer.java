@@ -10,7 +10,7 @@ public class DataContainer {
     private List objsToSend;
     private Field field;
 
-    public DataContainer(){
+    public DataContainer() {
         this.objsToTick = new HashSet<>();
         this.objsToSend = new LinkedList();
         this.field = new Field();
@@ -23,7 +23,7 @@ public class DataContainer {
         return field;
     }
 
-    public void setObjsToSend(List list){
+    public void setObjsToSend(List list) {
         objsToSend = list;
     }
 

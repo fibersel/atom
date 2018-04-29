@@ -12,12 +12,12 @@ public class Point {
 
 
     @JsonCreator
-    public Point(@JsonProperty("x")int x,@JsonProperty("y")int y){
+    public Point(@JsonProperty("x")int x,@JsonProperty("y")int y) {
         this.x = x;
         this.y = y;
     }
 
-    public Point(Point point){
+    public Point(Point point) {
         this.x = point.x;
         this.y = point.y;
     }

@@ -1,13 +1,19 @@
 package bomberman.gameservice;
 
-import bomberman.model.*;
+
 import bomberman.model.Character;
+import bomberman.model.DataContainer;
+import bomberman.model.Message;
+import bomberman.model.Topic;
+import bomberman.model.Direction;
 import bomberman.util.JsonHelper;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 
@@ -53,19 +59,19 @@ public class GameSession implements Runnable {
         switch (connectionsNum++) {
             case 0:
                 charList.put(newId, new Character(32, 32, owner, id++, container));
-                RMLDcorner();
+                cornerLd();
                 break;
             case 1:
                 charList.put(newId, new Character(480, 32, owner, id++, container));
-                RMRDcorner();
+                cornerRd();
                 break;
             case 2:
                 charList.put(newId, new Character(480, 352, owner, id++, container));
-                RMRUcorner();
+                cornerRu();
                 break;
             case 3:
                 charList.put(newId, new Character(32, 352, owner, id++, container));
-                RMLUcorner();
+                cornerLu();
                 break;
             default:
                 break;
@@ -100,7 +106,7 @@ public class GameSession implements Runnable {
             try {
                 Message replicaMsg = new Message(Topic.REPLICA, JsonHelper.toJson(container.getObjsToSend()));
                 pool.broadcast(JsonHelper.toJson(replicaMsg));
-                for(Integer key: charList.keySet())
+                for (Integer key: charList.keySet())
                     charList.get(key).setDirection(Direction.DOWN);
             } catch (IOException e) {
                 log.error(e.getMessage(), e.getStackTrace());
@@ -137,7 +143,7 @@ public class GameSession implements Runnable {
     }
 
 
-    private void RMLDcorner() {
+    private void cornerLd() {
         container.getObjsToSend().remove(container.getField().getBar(1, 1).getWood());
         container.getObjsToSend().remove(container.getField().getBar(1, 2).getWood());
         container.getObjsToSend().remove(container.getField().getBar(2, 1).getWood());
@@ -147,7 +153,7 @@ public class GameSession implements Runnable {
     }
 
 
-    private void RMRDcorner() {
+    private void cornerRd() {
         container.getObjsToSend().remove(container.getField().getBar(15, 1).getWood());
         container.getObjsToSend().remove(container.getField().getBar(15, 2).getWood());
         container.getObjsToSend().remove(container.getField().getBar(14, 1).getWood());
@@ -158,7 +164,7 @@ public class GameSession implements Runnable {
 
     }
 
-    private void RMRUcorner() {
+    private void cornerRu() {
         container.getObjsToSend().remove(container.getField().getBar(15, 11).getWood());
         container.getObjsToSend().remove(container.getField().getBar(15, 10).getWood());
         container.getObjsToSend().remove(container.getField().getBar(14, 11).getWood());
@@ -168,7 +174,7 @@ public class GameSession implements Runnable {
     }
 
 
-    private void RMLUcorner() {
+    private void cornerLu() {
         container.getObjsToSend().remove(container.getField().getBar(1, 11).getWood());
         container.getObjsToSend().remove(container.getField().getBar(1, 10).getWood());
         container.getObjsToSend().remove(container.getField().getBar(2, 11).getWood());

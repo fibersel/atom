@@ -34,7 +34,7 @@ public class Bomb implements Tickable,Pathless {
 
     @Override
     public void tick(long elapsed) {
-        if(timer > 3000)
+        if (timer > 3000)
             blow();
         else timer += elapsed;
     }
@@ -64,7 +64,7 @@ public class Bomb implements Tickable,Pathless {
         return size;
     }
 
-    public void blow(){
+    public void blow() {
         bar.blowBomb();
         owner.addBomb();
     }

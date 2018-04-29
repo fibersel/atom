@@ -41,26 +41,26 @@ public class Character {
         bars = getBarsByPosition(position);
     }
 
-    public void plant(){
-        if(bombsCtr-- > 0 && mainBer.isFree()) {
+    public void plant() {
+        if (bombsCtr-- > 0 && mainBer.isFree()) {
             Bomb bomb = new Bomb(GameSession.id++, mainBer, 1,this);
             container.getObjsToTick().add(bomb);
             container.getObjsToSend().add(bomb);
         }
     }
 
-    public void move(String direction,long frametime){
+    public void move(String direction,long frametime) {
         long distance = frametime * velocity;
         long allowed;
         int delta;
-        int X = position.getX() / Bar.getSize();
-        int Y = position.getY() / Bar.getSize();
+        int xpos = position.getX() / Bar.getSize();
+        int ypos = position.getY() / Bar.getSize();
         System.out.println(direction);
-        switch (direction){
+        switch (direction) {
             case "{\"direction\":\"UP\"}":
                 this.direction = Direction.UP;
                 allowed = position.getX() % Bar.getSize();
-                for (int i = X;container.getField().getBar(i,Y).isFree();i--)
+                for (int i = xpos;container.getField().getBar(i,ypos).isFree();i--)
                     allowed += Bar.getSize();
                 delta = (int)Math.min(allowed,distance);
                 position.setX(position.getX() - delta);
@@ -68,7 +68,7 @@ public class Character {
             case "{\"direction\":\"DOWN\"}":
                 this.direction = Direction.DOWN;
                 allowed = Bar.getSize() - position.getX() % Bar.getSize() - size;
-                for (int i = X;container.getField().getBar(X,i).isFree();i++)
+                for (int i = xpos;container.getField().getBar(xpos,i).isFree();i++)
                     allowed += Bar.getSize();
                 delta = (int)Math.min(allowed,distance);
                 position.setX(position.getX() + delta);
@@ -76,7 +76,7 @@ public class Character {
             case "{\"direction\":\"LEFT\"}":
                 this.direction = Direction.LEFT;
                 allowed = position.getY() % Bar.getSize();
-                for (int i = Y;container.getField().getBar(X,i).isFree();i--)
+                for (int i = ypos;container.getField().getBar(xpos,i).isFree();i--)
                     allowed += Bar.getSize();
                 delta = (int)Math.min(allowed,distance);
                 position.setY(position.getY() - delta);
@@ -84,19 +84,22 @@ public class Character {
             case "{\"direction\":\"RIGHT\"}":
                 this.direction = Direction.RIGHT;
                 allowed = Bar.getSize() -  (position.getX() + size) % Bar.getSize();
-                for (int i = position.getX() + size > Bar.getSize() ? X + 1 : X;container.getField().getBar(i,Y).isFree();i++) {
-                    System.out.println(i + "  " + Y);
+                for (int i = position.getX() + size > Bar.getSize() ? xpos + 1 : xpos;
+                     container.getField().getBar(i,ypos).isFree();i++) {
+                    System.out.println(i + "  " + ypos);
                     allowed += Bar.getSize();
                 }
                 delta = (int)Math.min(allowed,distance);
                 position.setX(position.getX() + delta);
                 break;
+            default:
+                break;
         }
-        bars.stream().forEach(e->e.removeChar(this));
+        bars.stream().forEach(e -> e.removeChar(this));
         bars = getBarsByPosition(position);
     }
 
-    public void addBomb(){
+    public void addBomb() {
         bombsCtr++;
     }
 
@@ -104,18 +107,18 @@ public class Character {
         return type;
     }
 
-    public List<Bar> getBarsByPosition(Point position){
+    public List<Bar> getBarsByPosition(Point position) {
         List<Bar> tmp = new LinkedList<>();
-        int x = position.getX() / Bar.getSize();
-        int y = position.getY() / Bar.getSize();
-        System.out.println(x);
-        System.out.println(y);
-        tmp.add(container.getField().getBar(x,y));
-        if(position.getX() % 48 + Character.size > Bar.getSize())
-            tmp.add(container.getField().getBar(x + 1,y));
+        int xpos = position.getX() / Bar.getSize();
+        int ypos = position.getY() / Bar.getSize();
+        System.out.println(xpos);
+        System.out.println(ypos);
+        tmp.add(container.getField().getBar(xpos,ypos));
+        if (position.getX() % 48 + Character.size > Bar.getSize())
+            tmp.add(container.getField().getBar(xpos + 1,ypos));
         else  if (position.getY() % 48 + Character.size > Bar.getSize())
-            tmp.add(container.getField().getBar(x,y + 1));
-        tmp.forEach(e->e.addChar(this));
+            tmp.add(container.getField().getBar(xpos,ypos + 1));
+        tmp.forEach(e -> e.addChar(this));
         return tmp;
     }
 
@@ -124,7 +127,7 @@ public class Character {
         this.direction = direction;
     }
 
-    public void kill(){
+    public void kill() {
         alive = false;
         container.getObjsToSend().remove(this);
     }

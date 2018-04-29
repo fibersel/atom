@@ -39,7 +39,7 @@ public class Message {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return " id: " + playerId + " topic: " + topic + " data: " + data;
     }
 
