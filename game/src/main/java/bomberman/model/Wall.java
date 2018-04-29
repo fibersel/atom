@@ -16,7 +16,7 @@ public class Wall implements Tickable,Pathless {
     private Bar bar;
 
 
-    private static final int size = 48;
+    private static final int size = 32;
 
     public Wall(int id,Bar bar ) {
         this.id = id;

@@ -28,7 +28,7 @@ public class Character {
     private long velocity = 1;
     @JsonIgnore
     private int bombsCtr = 1;
-    public static int size = 38;
+    public static int size = 28;
 
 
     public Character(int x, int y, String owner, int id,DataContainer container) {
@@ -55,34 +55,41 @@ public class Character {
         int delta;
         int X = position.getX() / Bar.getSize();
         int Y = position.getY() / Bar.getSize();
+        System.out.println(direction);
         switch (direction){
-            case "UP":
+            case "{\"direction\":\"UP\"}":
+                this.direction = Direction.UP;
                 allowed = position.getX() % Bar.getSize();
                 for (int i = X;container.getField().getBar(i,Y).isFree();i--)
                     allowed += Bar.getSize();
                 delta = (int)Math.min(allowed,distance);
                 position.setX(position.getX() - delta);
                 break;
-            case "DOWN":
+            case "{\"direction\":\"DOWN\"}":
+                this.direction = Direction.DOWN;
                 allowed = Bar.getSize() - position.getX() % Bar.getSize() - size;
                 for (int i = X;container.getField().getBar(X,i).isFree();i++)
                     allowed += Bar.getSize();
                 delta = (int)Math.min(allowed,distance);
                 position.setX(position.getX() + delta);
                 break;
-            case "LEFT":
+            case "{\"direction\":\"LEFT\"}":
+                this.direction = Direction.LEFT;
                 allowed = position.getY() % Bar.getSize();
                 for (int i = Y;container.getField().getBar(X,i).isFree();i--)
                     allowed += Bar.getSize();
                 delta = (int)Math.min(allowed,distance);
                 position.setY(position.getY() - delta);
                 break;
-            case "RIGHT":
-                allowed = Bar.getSize() - position.getY() % Bar.getSize() - size;
-                for (int i = Y;container.getField().getBar(X,i).isFree();i++)
+            case "{\"direction\":\"RIGHT\"}":
+                this.direction = Direction.RIGHT;
+                allowed = Bar.getSize() -  (position.getX() + size) % Bar.getSize();
+                for (int i = position.getX() + size > Bar.getSize() ? X + 1 : X;container.getField().getBar(i,Y).isFree();i++) {
+                    System.out.println(i + "  " + Y);
                     allowed += Bar.getSize();
+                }
                 delta = (int)Math.min(allowed,distance);
-                position.setY(position.getY() + delta);
+                position.setX(position.getX() + delta);
                 break;
         }
         bars.stream().forEach(e->e.removeChar(this));
@@ -112,6 +119,10 @@ public class Character {
         return tmp;
     }
 
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
 
     public void kill(){
         alive = false;

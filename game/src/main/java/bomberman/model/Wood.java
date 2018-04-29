@@ -16,7 +16,7 @@ public class Wood implements Tickable,Pathless {
     private Bar bar;
 
 
-    private static int size = 48;
+    private static int size = 32;
 
     public Wood(int id, Bar bar) {
         this.id = id;

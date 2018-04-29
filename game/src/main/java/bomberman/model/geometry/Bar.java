@@ -15,7 +15,7 @@ public class Bar implements Collider {
     private Point position;
     private Pathless plug = null;
     private List<Character> chars;
-    private static int size = 48;
+    private static int size = 32;
 
     public Bar(int X,int Y){
         this.position = new Point(X,Y);
@@ -55,11 +55,14 @@ public class Bar implements Collider {
     }
 
     public boolean isWall(){
+        if(plug == null){
+            return false;
+        }
         return plug.getClass() == Wall.class || plug.getClass() == Wood.class;
     }
 
     public void setWall(Wall wall){
-        if(plug != null){
+        if(wall != null){
             plug = wall;
         }
     }
@@ -68,6 +71,14 @@ public class Bar implements Collider {
         if(wood != null){
             plug = wood;
         }
+    }
+
+    public Pathless getWood(){
+        return plug;
+    }
+
+    public void removeWood(){
+        plug = null;
     }
 
     public Point getPosition() {
