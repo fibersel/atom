@@ -92,7 +92,9 @@ public class GameSession implements Runnable {
         } catch (IOException e) {
             log.error(e.getMessage(), e.getStackTrace());
         }
-
+        container.getObjsToSend().clear();
+        for(Character c: charList.values())
+            container.getObjsToSend().add(c);
         gameLoop();
     }
 
