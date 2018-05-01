@@ -68,7 +68,8 @@ public class Character {
                 allowed = Bar.getSize() - 1 - (position.getY() + height) % Bar.getSize();
 
                 for (int i = (position.getY() + height) / Bar.getSize() + 1;
-                     container.getField().getBar(xpos,i).isFree() && (position.getX() % Bar.getSize() + width) < Bar.getSize(); i--){
+                     container.getField().getBar(xpos,i).isFree()
+                             && (position.getX() % Bar.getSize() + width) < Bar.getSize(); i--) {
                     System.out.println(i + "  " + xpos);
                     allowed += Bar.getSize();
                 }
@@ -83,9 +84,8 @@ public class Character {
 
                 allowed = Bar.getSize() - 1 -  (position.getX() + width) % Bar.getSize();
 
-                for (int i = (position.getX() + width) / Bar.getSize() + 1;
-
-                     container.getField().getBar(i,ypos).isFree() && (position.getY() % Bar.getSize() + height) < Bar.getSize();i++) {
+                for (int i = (position.getX() + width) / Bar.getSize() + 1; container.getField().getBar(i,ypos).isFree()
+                        && (position.getY() % Bar.getSize() + height) < Bar.getSize();i++) {
                     System.out.println(i + "  " + ypos);
                     allowed += Bar.getSize();
                 }
@@ -100,9 +100,8 @@ public class Character {
 
                 allowed = position.getY() % Bar.getSize();
 
-                for (int i = ypos - 1;
-
-                     container.getField().getBar(xpos,i).isFree() && (position.getX() % Bar.getSize() + width) < Bar.getSize();i++){
+                for (int i = ypos - 1; container.getField().getBar(xpos,i).isFree()
+                        && (position.getX() % Bar.getSize() + width) < Bar.getSize(); i++) {
                     System.out.println(i + "  " + xpos);
                     allowed += Bar.getSize();
                 }
@@ -117,9 +116,8 @@ public class Character {
 
                 allowed = position.getX() % Bar.getSize();
 
-                for (int i = xpos - 1;
-
-                     container.getField().getBar(i,ypos).isFree() && (position.getY() % Bar.getSize() + height) < Bar.getSize();i--){
+                for (int i = xpos - 1; container.getField().getBar(i,ypos).isFree()
+                        && (position.getY() % Bar.getSize() + height) < Bar.getSize(); i--) {
                     System.out.println(i + "  " + ypos);
                     allowed += Bar.getSize();
                 }
@@ -150,21 +148,19 @@ public class Character {
         System.out.println(xpos);
         System.out.println(ypos);
         tmp.add(container.getField().getBar(xpos,ypos));
-        if (position.getX() % Bar.getSize() + width > Bar.getSize()){
+        if (position.getX() % Bar.getSize() + width > Bar.getSize()) {
             tmp.add(container.getField().getBar(xpos + 1,ypos));
-            if ( (position.getX() % Bar.getSize() + width) % Bar.getSize() > Bar.getSize() / 2)
+            if ((position.getX() % Bar.getSize() + width) % Bar.getSize() > Bar.getSize() / 2)
                 mainBar = container.getField().getBar(xpos + 1,ypos);
             else
                 mainBar = container.getField().getBar(xpos,ypos);
-        }
-        else  if (position.getY() % Bar.getSize() + height > Bar.getSize()){
+        } else if (position.getY() % Bar.getSize() + height > Bar.getSize()) {
             tmp.add(container.getField().getBar(xpos,ypos + 1));
-            if ( (position.getY() % Bar.getSize() + height) % Bar.getSize() > Bar.getSize() / 2)
+            if ((position.getY() % Bar.getSize() + height) % Bar.getSize() > Bar.getSize() / 2)
                 mainBar = container.getField().getBar(xpos,ypos + 1);
             else
                 mainBar = container.getField().getBar(xpos,ypos);
-        }
-        else mainBar = tmp.get(0);
+        } else mainBar = tmp.get(0);
         tmp.forEach(e -> e.addChar(this));
         return tmp;
     }

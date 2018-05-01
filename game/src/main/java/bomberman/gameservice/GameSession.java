@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 
 public class GameSession implements Runnable {
@@ -93,7 +95,7 @@ public class GameSession implements Runnable {
             log.error(e.getMessage(), e.getStackTrace());
         }
         container.getObjsToSend().clear();
-        for(Character c: charList.values())
+        for (Character c: charList.values())
             container.getObjsToSend().add(c);
         gameLoop();
     }
@@ -102,8 +104,6 @@ public class GameSession implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
             long started = System.currentTimeMillis();
             act(FRAME_TIME);
-            long elapsed = System.currentTimeMillis() - started;
-
 
             try {
                 Message replicaMsg = new Message(Topic.REPLICA, JsonHelper.toJson(container.getObjsToSend()));
@@ -116,14 +116,14 @@ public class GameSession implements Runnable {
                 continue;
             }
 
-            /*
+            long elapsed = System.currentTimeMillis() - started;
             if (elapsed < FRAME_TIME) {
                 log.info("All tick finish at {} ms", elapsed);
-            } else
-                log.info("{}: tick ", tickNumber);
-            */
+                LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(FRAME_TIME - elapsed));
+            } else {
+                log.warn("tick lag {} ms", elapsed - FRAME_TIME);
+            }
             tickNumber++;
-
         }
     }
 
