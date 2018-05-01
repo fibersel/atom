@@ -42,7 +42,7 @@ public class Bar implements Collider {
         }
     }
 
-    public boolean bombStands(){
+    public boolean bombStands() {
         return this.bomb != null;
     }
 

@@ -51,7 +51,7 @@ public class MatchMakerDaemon implements Runnable {
         }
     }
 
-    String[] addPlayers () {
+    String[] addPlayers() {
         String[] players = new String[MAX_NUMBER_OF_PLAYERS];
         int index = 0;
         long lastTime = Long.MAX_VALUE;
@@ -81,7 +81,7 @@ public class MatchMakerDaemon implements Runnable {
         return finalList;
     }
 
-    void makeSession (String[] players) {
+    void makeSession(String[] players) {
         MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
         Request request;
         Response response;
