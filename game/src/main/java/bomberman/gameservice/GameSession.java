@@ -109,7 +109,7 @@ public class GameSession implements Runnable {
                 Message replicaMsg = new Message(Topic.REPLICA, JsonHelper.toJson(container.getObjsToSend()));
                 pool.broadcast(JsonHelper.toJson(replicaMsg));
                 for (Integer key: charList.keySet())
-                    charList.get(key).setDirection(Direction.DOWN);
+                    charList.get(key).setDirection(Direction.DEFAULT);
             } catch (IOException e) {
                 log.error(e.getMessage(), e.getStackTrace());
                 tickNumber++;
@@ -145,7 +145,7 @@ public class GameSession implements Runnable {
     }
 
 
-    private void cornerLd() {
+    public void cornerLd() {
         container.getObjsToSend().remove(container.getField().getBar(1, 1).getWood());
         container.getObjsToSend().remove(container.getField().getBar(1, 2).getWood());
         container.getObjsToSend().remove(container.getField().getBar(2, 1).getWood());
@@ -155,7 +155,7 @@ public class GameSession implements Runnable {
     }
 
 
-    private void cornerRd() {
+    public void cornerRd() {
         container.getObjsToSend().remove(container.getField().getBar(15, 1).getWood());
         container.getObjsToSend().remove(container.getField().getBar(15, 2).getWood());
         container.getObjsToSend().remove(container.getField().getBar(14, 1).getWood());
@@ -184,4 +184,5 @@ public class GameSession implements Runnable {
         container.getField().getBar(1, 10).removeWood();
         container.getField().getBar(2, 11).removeWood();
     }
+
 }
