@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * Created by imakarycheva on 22.04.18.
  */
-public class Bomb implements Tickable,Pathless {
+public class Bomb implements Tickable {
     private final String type = "Bomb";
     private int id;
     private Point position;
@@ -16,7 +16,7 @@ public class Bomb implements Tickable,Pathless {
     @JsonIgnore
     private Bar bar;
     @JsonIgnore
-    private long timer = 0;
+    private long timer;
     @JsonIgnore
     private Character owner;
 
@@ -27,6 +27,7 @@ public class Bomb implements Tickable,Pathless {
         bar.setBomb(this);
         this.position = bar.getPosition();
         this.owner = owner;
+        this.timer = System.currentTimeMillis();
     }
 
 
@@ -34,9 +35,8 @@ public class Bomb implements Tickable,Pathless {
 
     @Override
     public void tick(long elapsed) {
-        if (timer > 3000)
+        if (timer - System.currentTimeMillis() > 3000)
             blow();
-        else timer += elapsed;
     }
 
     public String getType() {

@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 
 public class GameSession implements Runnable {
@@ -92,7 +94,9 @@ public class GameSession implements Runnable {
         } catch (IOException e) {
             log.error(e.getMessage(), e.getStackTrace());
         }
-
+        container.getObjsToSend().clear();
+        for (Character c: charList.values())
+            container.getObjsToSend().add(c);
         gameLoop();
     }
 
@@ -100,28 +104,26 @@ public class GameSession implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
             long started = System.currentTimeMillis();
             act(FRAME_TIME);
-            long elapsed = System.currentTimeMillis() - started;
-
 
             try {
                 Message replicaMsg = new Message(Topic.REPLICA, JsonHelper.toJson(container.getObjsToSend()));
                 pool.broadcast(JsonHelper.toJson(replicaMsg));
                 for (Integer key: charList.keySet())
-                    charList.get(key).setDirection(Direction.DOWN);
+                    charList.get(key).setDirection(Direction.DEFAULT);
             } catch (IOException e) {
                 log.error(e.getMessage(), e.getStackTrace());
                 tickNumber++;
                 continue;
             }
 
-            /*
+            long elapsed = System.currentTimeMillis() - started;
             if (elapsed < FRAME_TIME) {
                 log.info("All tick finish at {} ms", elapsed);
-            } else
-                log.info("{}: tick ", tickNumber);
-            */
+                LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(FRAME_TIME - elapsed));
+            } else {
+                log.warn("tick lag {} ms", elapsed - FRAME_TIME);
+            }
             tickNumber++;
-
         }
     }
 
@@ -143,7 +145,7 @@ public class GameSession implements Runnable {
     }
 
 
-    private void cornerLd() {
+    public void cornerLd() {
         container.getObjsToSend().remove(container.getField().getBar(1, 1).getWood());
         container.getObjsToSend().remove(container.getField().getBar(1, 2).getWood());
         container.getObjsToSend().remove(container.getField().getBar(2, 1).getWood());
@@ -153,7 +155,7 @@ public class GameSession implements Runnable {
     }
 
 
-    private void cornerRd() {
+    public void cornerRd() {
         container.getObjsToSend().remove(container.getField().getBar(15, 1).getWood());
         container.getObjsToSend().remove(container.getField().getBar(15, 2).getWood());
         container.getObjsToSend().remove(container.getField().getBar(14, 1).getWood());
@@ -182,4 +184,5 @@ public class GameSession implements Runnable {
         container.getField().getBar(1, 10).removeWood();
         container.getField().getBar(2, 11).removeWood();
     }
+
 }

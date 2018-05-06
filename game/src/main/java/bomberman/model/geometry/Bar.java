@@ -15,6 +15,7 @@ public class Bar implements Collider {
     private int coordY;
     private Point position;
     private Pathless plug = null;
+    private Bomb bomb;
     private List<Character> chars;
     private static int size = 32;
 
@@ -35,10 +36,14 @@ public class Bar implements Collider {
     }
 
     public void setBomb(Bomb bomb) {
-        if (plug != null) {
-            plug = bomb;
+        if (bomb != null) {
+            this.bomb = bomb;
             bomb.setBar(this);
         }
+    }
+
+    public boolean bombStands() {
+        return this.bomb != null;
     }
 
 
