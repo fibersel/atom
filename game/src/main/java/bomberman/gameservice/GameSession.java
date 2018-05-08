@@ -164,13 +164,9 @@ public class GameSession implements Runnable {
         container.getObjsToSend().remove(container.getField().getBar(1, 1).getPlug());
         container.getObjsToSend().remove(container.getField().getBar(1, 2).getPlug());
         container.getObjsToSend().remove(container.getField().getBar(2, 1).getPlug());
-        container.getObjsToSend().remove(container.getField().getBar(3, 1).getPlug());
-        container.getObjsToSend().remove(container.getField().getBar(1, 3).getPlug());
         container.getField().getBar(1, 1).clearBar();
         container.getField().getBar(1, 2).clearBar();
         container.getField().getBar(2, 1).clearBar();
-        container.getField().getBar(3, 1).clearBar();
-        container.getField().getBar(1, 3).clearBar();
     }
 
 

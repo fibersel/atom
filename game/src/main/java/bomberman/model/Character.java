@@ -28,6 +28,8 @@ public class Character {
     private float velocity = 0.1F;
     @JsonIgnore
     private int bombsCtr = 2;
+    @JsonIgnore
+    private int bombStrength;
     public static int width = 28;
     public static int height = 24;
 
@@ -41,12 +43,13 @@ public class Character {
         this.container = container;
         this.bars = getBarsByPosition(position);
         this.mainBar = bars.get(0);
+        this.bombStrength = 1;
     }
 
     public void plant() {
         if (bombsCtr > 0 && !mainBar.bombStands()) {
             bombsCtr--;
-            Bomb bomb = new Bomb(GameSession.id++, mainBar, 2,this);
+            Bomb bomb = new Bomb(GameSession.id++, mainBar, bombStrength,this);
             container.getObjsToTick().add(bomb);
             container.getObjsToSend().add(bomb);
         }

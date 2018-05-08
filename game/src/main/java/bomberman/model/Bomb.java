@@ -18,7 +18,7 @@ public class Bomb implements Tickable {
     private static int size = 28;
 
     @JsonIgnore
-    private final long cooldown= 5000;
+    private final long cooldown= 3000;
     @JsonIgnore
     private Bar bar;
     @JsonIgnore
