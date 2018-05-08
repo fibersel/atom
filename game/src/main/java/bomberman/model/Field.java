@@ -44,16 +44,19 @@ public class Field {
         return field[y][x];
     }
 
-    ArrayList<Bar> getBarsInRadius(int radius, int centerX, int centerY) {
-
+    ArrayList<Bar> getBarsAround(int centerX, int centerY) {
         ArrayList<Bar> bars = new ArrayList<>();
-        for (int i = centerX - radius; i <= centerX + radius; i++) {
-            for (int j = centerY - radius; j <= centerY + radius; j++) {
-                if ((i >= 0) && (i < width) && (j >= 0) && (j < height)) {
-                    bars.add(getBar(i, j));
-                }
-            }
-        }
+        if ((centerX >= 0) && (centerX < width) && (centerY >= 0) && (centerY < height))
+            bars.add(getBar(centerX, centerY));
+        if ((centerX - 1 >= 0) && (centerX - 1 < width) && (centerY >= 0) && (centerY < height))
+            bars.add(getBar(centerX - 1, centerY));
+        if ((centerX >= 0) && (centerX < width) && (centerY - 1 >= 0) && (centerY - 1 < height))
+            bars.add(getBar(centerX, centerY - 1));
+        if ((centerX + 1 >= 0) && (centerX + 1 < width) && (centerY >= 0) && (centerY < height))
+            bars.add(getBar(centerX + 1, centerY));
+        if ((centerX >= 0) && (centerX < width) && (centerY + 1 >= 0) && (centerY + 1 < height))
+            bars.add(getBar(centerX, centerY + 1));
+
         return bars;
     }
 }
