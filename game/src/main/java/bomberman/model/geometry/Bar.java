@@ -11,13 +11,14 @@ public class Bar implements Collider {
     private int coordX;
     private int coordY;
     private Point position;
-    private Pathless plug = null;
-    private Bomb bomb = null;
+    private Pathless plug;
+    private Bomb bomb;
     private List<Character> chars;
     private static int size = 32;
 
     public Bar(int coordX,int coordY, int j, int i) {
-        
+        this.plug = null;
+        this.bomb = null;
         this.position = new Point(coordX,coordY);
         this.coordX = j;
         this.coordY = i;
@@ -42,9 +43,7 @@ public class Bar implements Collider {
     }
 
     public void setBomb(Bomb bomb) {
-        if (bomb == null) {
-            this.bomb = bomb;
-        }
+        this.bomb = bomb;
     }
 
     public Bomb getBomb() {
@@ -56,6 +55,9 @@ public class Bar implements Collider {
     }
 
     public void removeBomb() {
+        if (bomb == null) {
+            System.out.println("null");
+        }
         bomb = null;
     }
 
@@ -66,15 +68,6 @@ public class Bar implements Collider {
     public List<Character> getChars () {
         return chars;
     }
-
-/*
-    public void blowBomb() {
-        chars.stream().forEach(Character::kill);
-        chars = new LinkedList<>();
-        //for (int i = 0;i < bomb.getStrength();i++)
-        //    plug = null;
-        bomb = null;
-    }*/
 
     public boolean isWall() {
         if (plug == null) {

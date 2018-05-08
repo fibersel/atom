@@ -116,6 +116,9 @@ public class GameSession implements Runnable {
                     if (o.getClass() == Wood.class) {
                         container.getObjsToSend().remove(o);
                     }
+                    if (o.getClass() == Fire.class) {
+                        container.getObjsToSend().remove(o);
+                    }
                 }
 
                 for (Integer key: charList.keySet())

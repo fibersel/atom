@@ -16,6 +16,7 @@ public class Bomb implements Tickable {
     private int strength;
 
     private static int size = 28;
+
     @JsonIgnore
     private final long cooldown= 5000;
     @JsonIgnore
@@ -29,7 +30,7 @@ public class Bomb implements Tickable {
         this.id = id;
         this.strength = strength;
         this.bar = bar;
-        bar.setBomb(this);
+        this.bar.setBomb(this);
         this.position = bar.getPosition();
         this.owner = owner;
         this.timer = System.currentTimeMillis();
@@ -44,7 +45,6 @@ public class Bomb implements Tickable {
 
     public void dropCooldown() {
         timer -= cooldown;
-        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     }
 
     public String getType() {
@@ -78,15 +78,14 @@ public class Bomb implements Tickable {
         for (Bar b: temp) {
             if (b.isWood()) {
                 if (!owner.getContainer().getObjsToSend().contains(b.getPlug())) {
-                    System.out.println("!!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
                     owner.getContainer().getObjsToSend().add(b.getPlug());
                 }
             }
-            System.out.println(b.bombStands() + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
             if (b.bombStands()) {
-                System.out.println("!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
                 b.getBomb().dropCooldown();
             }
+            Fire fire = new Fire(GameSession.id++, b);
+            owner.getContainer().getObjsToSend().add(fire);
             b.removeWood();
             b.getChars().stream().forEach(Character::kill);
         }

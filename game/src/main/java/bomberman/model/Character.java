@@ -27,7 +27,7 @@ public class Character {
     @JsonIgnore
     private float velocity = 0.1F;
     @JsonIgnore
-    private int bombsCtr = 2;
+    private int bombsCtr = 1;
     public static int width = 28;
     public static int height = 24;
 
