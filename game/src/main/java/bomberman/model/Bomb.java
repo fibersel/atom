@@ -26,9 +26,9 @@ public class Bomb implements Tickable {
     @JsonIgnore
     private Character owner;
     @JsonIgnore
-    private ArrayList<Bar> blowedBars;
+    private ArrayList<Bar> barsToBlow;
 
-    public Bomb(int id,Bar bar, int strength,Character owner) {
+    public Bomb(int id,Bar bar, int strength, Character owner) {
         this.id = id;
         this.strength = strength;
         this.bar = bar;
@@ -36,7 +36,7 @@ public class Bomb implements Tickable {
         this.position = bar.getPosition();
         this.owner = owner;
         this.timer = System.currentTimeMillis();
-        blowedBars = new ArrayList<>();
+        barsToBlow = new ArrayList<>();
     }
 
     @Override
@@ -77,67 +77,58 @@ public class Bomb implements Tickable {
     public void blow() {
         timer = Long.MAX_VALUE;
         bar.removeBomb();
-        ArrayList<Bar> temp = owner.getContainer().getField().getBarsAround(bar.getCoordX(), bar.getCoordY());
-        for (Bar b: temp) {
-            if (!blowedBars.contains(b)) {
-                System.out.println("!!!\n\n\n\n");
-                if (b.isWood()) {
-                    if (!owner.getContainer().getObjsToSend().contains(b.getPlug())) {
-                        owner.getContainer().getObjsToSend().add(b.getPlug());
-                    }
-                }
-                if (b.bombStands()) {
-                    b.getBomb().dropCooldown();
-                }
-                if (!b.isWall()) {
-                    Fire fire = new Fire(GameSession.id++, b);
-                    owner.getContainer().getObjsToSend().add(fire);
-                }
+        Fire fire = new Fire(GameSession.id++, bar);
+        owner.getContainer().getObjsToSend().add(fire);
+        bar.getChars().stream().forEach(Character::kill);
+
+        getBarsInDirections();
+        for (Bar b: barsToBlow) {
+            fire = new Fire(GameSession.id++, b);
+            owner.getContainer().getObjsToSend().add(fire);
+            b.getChars().stream().forEach(Character::kill);
+            if (b.isWood()) {
+                owner.getContainer().getObjsToSend().add(b.getPlug());
                 b.removeWood();
-                b.getChars().stream().forEach(Character::kill);
-                blowedBars.add(b);
+            }
+            if (b.bombStands()) {
+                b.getBomb().dropCooldown();
+                b.removeBomb();
             }
         }
-        for (Bar b: temp) {
-            if (!b.isWall()) {
-                fakeBlow(b, strength - 1);
-            }
-        }
-        blowedBars.clear();
+        barsToBlow.clear();
         owner.getContainer().getObjsToSend().remove(this);
         owner.getContainer().getObjsToTick().remove(this);
         owner.addBomb();
     }
 
-    void fakeBlow(Bar bar, int strength) {
-        if (strength <= 0) {
-            return;
-        }
-
-        ArrayList<Bar> temp = owner.getContainer().getField().getBarsAround(bar.getCoordX(), bar.getCoordY());
-        for (Bar b: temp) {
-            if (!blowedBars.contains(b)) {
-                System.out.println("!\n\n\n\n");
+    void getBarsInDirections() {
+        Bar b;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 1; strength - j >= 0; j++) {
+                switch (i) {
+                    case 0:
+                        b = owner.getContainer().getField().getBar(bar.getCoordX() + j, bar.getCoordY());
+                        break;
+                    case 1:
+                        b = owner.getContainer().getField().getBar(bar.getCoordX() - j, bar.getCoordY());
+                        break;
+                    case 2:
+                        b = owner.getContainer().getField().getBar(bar.getCoordX(), bar.getCoordY() + j);
+                        break;
+                    case 3:
+                        b = owner.getContainer().getField().getBar(bar.getCoordX(), bar.getCoordY() - j);
+                        break;
+                    default:
+                        b = bar;
+                }
+                if (b.isWall()) {
+                    break;
+                }
                 if (b.isWood()) {
-                    if (!owner.getContainer().getObjsToSend().contains(b.getPlug())) {
-                        owner.getContainer().getObjsToSend().add(b.getPlug());
-                    }
+                    barsToBlow.add(b);
+                    break;
                 }
-                if (b.bombStands()) {
-                    b.getBomb().dropCooldown();
-                }
-                if (!b.isWall()) {
-                    Fire fire = new Fire(GameSession.id++, b);
-                    owner.getContainer().getObjsToSend().add(fire);
-                }
-                b.removeWood();
-                b.getChars().stream().forEach(Character::kill);
-                blowedBars.add(b);
-            }
-        }
-        for (Bar b: temp) {
-            if(!b.isWall()) {
-                fakeBlow(b, strength - 1);
+                barsToBlow.add(b);
             }
         }
     }
