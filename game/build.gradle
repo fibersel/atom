@@ -2,7 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.0.0.RELEASE'
 }
 
-group 'MatchMaker'
+group 'bomberman'
 
 
 apply plugin: 'java'
