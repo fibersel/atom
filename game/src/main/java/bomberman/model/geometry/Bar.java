@@ -1,12 +1,9 @@
 package bomberman.model.geometry;
 
-import bomberman.model.Wood;
-import bomberman.model.Wall;
-import bomberman.model.Bomb;
+import bomberman.model.*;
 import bomberman.model.Character;
-import bomberman.model.Pathless;
-import bomberman.model.Point;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,15 +11,17 @@ public class Bar implements Collider {
     private int coordX;
     private int coordY;
     private Point position;
-    private Pathless plug = null;
+    private Pathless plug;
     private Bomb bomb;
     private List<Character> chars;
     private static int size = 32;
 
-    public Bar(int coordX,int coordY) {
+    public Bar(int coordX,int coordY, int j, int i) {
+        this.plug = null;
+        this.bomb = null;
         this.position = new Point(coordX,coordY);
-        this.coordX = coordX / Bar.size;
-        this.coordY = coordY / Bar.size;
+        this.coordX = j;
+        this.coordY = i;
         this.chars = new LinkedList<>();
     }
 
@@ -35,36 +34,53 @@ public class Bar implements Collider {
         return size;
     }
 
+    public int getCoordX() {
+        return coordX;
+    }
+
+    public int getCoordY() {
+        return coordY;
+    }
+
     public void setBomb(Bomb bomb) {
-        if (bomb != null) {
-            this.bomb = bomb;
-            bomb.setBar(this);
-        }
+        this.bomb = bomb;
+    }
+
+    public Bomb getBomb() {
+        return bomb;
     }
 
     public boolean bombStands() {
         return this.bomb != null;
     }
 
+    public void removeBomb() {
+        if (bomb == null) {
+            System.out.println("null");
+        }
+        bomb = null;
+    }
 
     public boolean isFree() {
         return plug == null;
     }
 
-
-    public void blowBomb() {
-        Bomb bomb = (Bomb)plug;
-        chars.stream().forEach(Character::kill);
-        chars = new LinkedList<>();
-        for (int i = 0;i < bomb.getStrength();i++)
-            plug = null;
+    public List<Character> getChars () {
+        return chars;
     }
 
     public boolean isWall() {
         if (plug == null) {
             return false;
         }
-        return plug.getClass() == Wall.class || plug.getClass() == Wood.class;
+        return plug.getClass() == Wall.class;
+    }
+
+    public boolean isWood() {
+        if (plug == null) {
+            return false;
+        }
+        return plug.getClass() == Wood.class;
     }
 
     public void setWall(Wall wall) {
@@ -79,11 +95,11 @@ public class Bar implements Collider {
         }
     }
 
-    public Pathless getWood() {
+    public Pathless getPlug() {
         return plug;
     }
 
-    public void removeWood() {
+    public void clearBar() {
         plug = null;
     }
 
@@ -95,8 +111,16 @@ public class Bar implements Collider {
         chars.add(c);
     }
 
-
     public void removeChar(Character c) {
         chars.remove(c);
+    }
+
+    public void removeWood() {
+        if (plug == null) {
+            return;
+        }
+        if (plug.getClass() == Wood.class) {
+            plug = null;
+        }
     }
 }
