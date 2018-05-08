@@ -96,7 +96,6 @@ public class Bomb implements Tickable {
             }
         }
         barsToBlow.clear();
-
         owner.getContainer().getObjsToSend().remove(this);
         owner.getContainer().getObjsToTick().remove(this);
         owner.addBomb();
