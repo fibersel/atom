@@ -1,7 +1,10 @@
 package bomberman.model;
 
+import bomberman.gameservice.GameSession;
 import bomberman.model.geometry.Bar;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.ArrayList;
 
 /**
  * Created by imakarycheva on 22.04.18.
@@ -13,6 +16,8 @@ public class Bomb implements Tickable {
     private int strength;
 
     private static int size = 28;
+    @JsonIgnore
+    private final long cooldown= 5000;
     @JsonIgnore
     private Bar bar;
     @JsonIgnore
@@ -30,13 +35,16 @@ public class Bomb implements Tickable {
         this.timer = System.currentTimeMillis();
     }
 
-
-
-
     @Override
     public void tick(long elapsed) {
-        if (timer - System.currentTimeMillis() > 3000)
+        if (System.currentTimeMillis() - timer > cooldown) {
             blow();
+        }
+    }
+
+    public void dropCooldown() {
+        timer -= cooldown;
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     }
 
     public String getType() {
@@ -59,13 +67,31 @@ public class Bomb implements Tickable {
         this.bar = bar;
     }
 
-
     public int getSize() {
         return size;
     }
 
     public void blow() {
-        bar.blowBomb();
+        timer = Long.MAX_VALUE;
+        bar.removeBomb();
+        ArrayList<Bar> temp = owner.getContainer().getField().getBarsInRadius(strength, bar.getCoordX(), bar.getCoordY());
+        for (Bar b: temp) {
+            if (b.isWood()) {
+                if (!owner.getContainer().getObjsToSend().contains(b.getPlug())) {
+                    System.out.println("!!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+                    owner.getContainer().getObjsToSend().add(b.getPlug());
+                }
+            }
+            System.out.println(b.bombStands() + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+            if (b.bombStands()) {
+                System.out.println("!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+                b.getBomb().dropCooldown();
+            }
+            b.removeWood();
+            b.getChars().stream().forEach(Character::kill);
+        }
+        owner.getContainer().getObjsToSend().remove(this);
+        owner.getContainer().getObjsToTick().remove(this);
         owner.addBomb();
     }
 }

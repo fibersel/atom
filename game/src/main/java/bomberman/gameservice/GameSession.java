@@ -1,11 +1,8 @@
 package bomberman.gameservice;
 
 
+import bomberman.model.*;
 import bomberman.model.Character;
-import bomberman.model.DataContainer;
-import bomberman.model.Message;
-import bomberman.model.Topic;
-import bomberman.model.Direction;
 import bomberman.util.JsonHelper;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;
@@ -108,6 +105,19 @@ public class GameSession implements Runnable {
             try {
                 Message replicaMsg = new Message(Topic.REPLICA, JsonHelper.toJson(container.getObjsToSend()));
                 pool.broadcast(JsonHelper.toJson(replicaMsg));
+
+                for (Object o: container.getObjsToSend()) {
+                    if (o.getClass() == Character.class) {
+                        Character character = (Character) o;
+                        if (!character.isAlive()) {
+                            container.getObjsToSend().remove(o);
+                        }
+                    }
+                    if (o.getClass() == Wood.class) {
+                        container.getObjsToSend().remove(o);
+                    }
+                }
+
                 for (Integer key: charList.keySet())
                     charList.get(key).setDirection(Direction.DEFAULT);
             } catch (IOException e) {
@@ -115,6 +125,8 @@ public class GameSession implements Runnable {
                 tickNumber++;
                 continue;
             }
+
+
 
             long elapsed = System.currentTimeMillis() - started;
             if (elapsed < FRAME_TIME) {
@@ -146,43 +158,47 @@ public class GameSession implements Runnable {
 
 
     public void cornerLd() {
-        container.getObjsToSend().remove(container.getField().getBar(1, 1).getWood());
-        container.getObjsToSend().remove(container.getField().getBar(1, 2).getWood());
-        container.getObjsToSend().remove(container.getField().getBar(2, 1).getWood());
-        container.getField().getBar(1, 1).removeWood();
-        container.getField().getBar(1, 2).removeWood();
-        container.getField().getBar(2, 1).removeWood();
+        container.getObjsToSend().remove(container.getField().getBar(1, 1).getPlug());
+        container.getObjsToSend().remove(container.getField().getBar(1, 2).getPlug());
+        container.getObjsToSend().remove(container.getField().getBar(2, 1).getPlug());
+        container.getObjsToSend().remove(container.getField().getBar(3, 1).getPlug());
+        container.getObjsToSend().remove(container.getField().getBar(1, 3).getPlug());
+        container.getField().getBar(1, 1).clearBar();
+        container.getField().getBar(1, 2).clearBar();
+        container.getField().getBar(2, 1).clearBar();
+        container.getField().getBar(3, 1).clearBar();
+        container.getField().getBar(1, 3).clearBar();
     }
 
 
     public void cornerRd() {
-        container.getObjsToSend().remove(container.getField().getBar(15, 1).getWood());
-        container.getObjsToSend().remove(container.getField().getBar(15, 2).getWood());
-        container.getObjsToSend().remove(container.getField().getBar(14, 1).getWood());
-        container.getField().getBar(15, 1).removeWood();
-        container.getField().getBar(15, 2).removeWood();
-        container.getField().getBar(14, 1).removeWood();
+        container.getObjsToSend().remove(container.getField().getBar(15, 1).getPlug());
+        container.getObjsToSend().remove(container.getField().getBar(15, 2).getPlug());
+        container.getObjsToSend().remove(container.getField().getBar(14, 1).getPlug());
+        container.getField().getBar(15, 1).clearBar();
+        container.getField().getBar(15, 2).clearBar();
+        container.getField().getBar(14, 1).clearBar();
 
 
     }
 
     private void cornerRu() {
-        container.getObjsToSend().remove(container.getField().getBar(15, 11).getWood());
-        container.getObjsToSend().remove(container.getField().getBar(15, 10).getWood());
-        container.getObjsToSend().remove(container.getField().getBar(14, 11).getWood());
-        container.getField().getBar(15, 11).removeWood();
-        container.getField().getBar(15, 10).removeWood();
-        container.getField().getBar(14, 11).removeWood();
+        container.getObjsToSend().remove(container.getField().getBar(15, 11).getPlug());
+        container.getObjsToSend().remove(container.getField().getBar(15, 10).getPlug());
+        container.getObjsToSend().remove(container.getField().getBar(14, 11).getPlug());
+        container.getField().getBar(15, 11).clearBar();
+        container.getField().getBar(15, 10).clearBar();
+        container.getField().getBar(14, 11).clearBar();
     }
 
 
     private void cornerLu() {
-        container.getObjsToSend().remove(container.getField().getBar(1, 11).getWood());
-        container.getObjsToSend().remove(container.getField().getBar(1, 10).getWood());
-        container.getObjsToSend().remove(container.getField().getBar(2, 11).getWood());
-        container.getField().getBar(1, 11).removeWood();
-        container.getField().getBar(1, 10).removeWood();
-        container.getField().getBar(2, 11).removeWood();
+        container.getObjsToSend().remove(container.getField().getBar(1, 11).getPlug());
+        container.getObjsToSend().remove(container.getField().getBar(1, 10).getPlug());
+        container.getObjsToSend().remove(container.getField().getBar(2, 11).getPlug());
+        container.getField().getBar(1, 11).clearBar();
+        container.getField().getBar(1, 10).clearBar();
+        container.getField().getBar(2, 11).clearBar();
     }
 
 }
