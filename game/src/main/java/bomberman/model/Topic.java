@@ -9,5 +9,6 @@ public enum Topic {
     START,
     END_MATCH,
     POSSESS,
-    FINISH
+    FINISH,
+    GAME_OVER
 }

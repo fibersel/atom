@@ -1,7 +1,12 @@
 package bomberman.model.geometry;
 
-import bomberman.model.*;
+import bomberman.model.Bomb;
+import bomberman.model.Point;
+import bomberman.model.Pathless;
+import bomberman.model.Wall;
+import bomberman.model.Wood;
 import bomberman.model.Character;
+import bomberman.model.Bonus;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -13,6 +18,7 @@ public class Bar implements Collider {
     private Point position;
     private Pathless plug;
     private Bomb bomb;
+    private Bonus bonus;
     private List<Character> chars;
     private static int size = 32;
 
@@ -65,7 +71,7 @@ public class Bar implements Collider {
         return plug == null;
     }
 
-    public List<Character> getChars () {
+    public List<Character> getChars() {
         return chars;
     }
 
@@ -122,5 +128,21 @@ public class Bar implements Collider {
         if (plug.getClass() == Wood.class) {
             plug = null;
         }
+    }
+
+    public boolean hasBonus() {
+        return bonus != null;
+    }
+
+    public void setBonus(Bonus bonus) {
+        this.bonus = bonus;
+    }
+
+    public Bonus getBonus() {
+        return bonus;
+    }
+
+    public void removeBonus() {
+        bonus = null;
     }
 }

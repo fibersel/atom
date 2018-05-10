@@ -3,6 +3,7 @@ package bomberman.model;
 import bomberman.gameservice.GameSession;
 import bomberman.model.geometry.Bar;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,9 +16,11 @@ public class Character {
     private Direction direction;
     private boolean alive;
 
+    @JsonIgnore
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(Character.class);
 
     @JsonIgnore
-    private String owner;
+    private final String owner;
     @JsonIgnore
     private DataContainer container;
     @JsonIgnore
@@ -28,6 +31,8 @@ public class Character {
     private float velocity = 0.1F;
     @JsonIgnore
     private int bombsCtr = 2;
+    @JsonIgnore
+    private int bombStrength = 2;
     public static int width = 28;
     public static int height = 24;
 
@@ -46,7 +51,7 @@ public class Character {
     public void plant() {
         if (bombsCtr > 0 && !mainBar.bombStands()) {
             bombsCtr--;
-            Bomb bomb = new Bomb(GameSession.id++, mainBar, 2,this);
+            Bomb bomb = new Bomb(GameSession.id++, mainBar, bombStrength,this);
             container.getObjsToTick().add(bomb);
             container.getObjsToSend().add(bomb);
         }
@@ -76,6 +81,7 @@ public class Character {
                              && (position.getX() % Bar.getSize() + width) < Bar.getSize(); i--) {
                     System.out.println(i + "  " + xpos);
                     allowed += Bar.getSize();
+                    checkAndApplyBonus(xpos,i);
                 }
                 delta = (int)Math.min(allowed,distance);
                 position.setY(position.getY() + delta);
@@ -92,6 +98,7 @@ public class Character {
                         && (position.getY() % Bar.getSize() + height) < Bar.getSize();i++) {
                     System.out.println(i + "  " + ypos);
                     allowed += Bar.getSize();
+                    checkAndApplyBonus(i,ypos);
                 }
                 delta = (int)Math.min(allowed,distance);
                 position.setX(position.getX() + delta);
@@ -108,6 +115,7 @@ public class Character {
                         && (position.getX() % Bar.getSize() + width) < Bar.getSize(); i++) {
                     System.out.println(i + "  " + xpos);
                     allowed += Bar.getSize();
+                    checkAndApplyBonus(xpos,i);
                 }
                 delta = (int)Math.min(allowed,distance);
                 position.setY(position.getY() - delta);
@@ -124,6 +132,7 @@ public class Character {
                         && (position.getY() % Bar.getSize() + height) < Bar.getSize(); i--) {
                     System.out.println(i + "  " + ypos);
                     allowed += Bar.getSize();
+                    checkAndApplyBonus(i,ypos);
                 }
                 delta = (int)Math.min(allowed,distance);
                 position.setX(position.getX() - delta);
@@ -169,8 +178,6 @@ public class Character {
         return tmp;
     }
 
-
-
     public void setDirection(Direction direction) {
         this.direction = direction;
     }
@@ -179,5 +186,38 @@ public class Character {
         alive = false;
     }
 
-    public DataContainer getContainer () {return container;}
+    public DataContainer getContainer() {
+        return container;
+    }
+
+    private void checkAndApplyBonus(int x, int y) {
+        Bar bar = container.getField().getBar(x,y);
+        if (bar.hasBonus()) {
+            Bonus bonus = bar.getBonus();
+            bar.removeBonus();
+            applyBonus(bonus);
+            container.getObjsToSend().add(bonus);
+            log.info("Character# {} got bonus {}", id, bonus.getBonusType());
+        }
+    }
+
+    private void applyBonus(Bonus bonus) {
+        switch (bonus.getBonusType()) {
+            case SPEED:
+                velocity *= 2;
+                break;
+            case RANGE:
+                bombStrength *= 2;
+                break;
+            case BOMBS:
+                bombsCtr += 2;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public String getOwner() {
+        return owner;
+    }
 }
