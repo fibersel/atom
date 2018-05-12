@@ -3,6 +3,7 @@ package bomberman.model;
 import bomberman.gameservice.GameSession;
 import bomberman.model.geometry.Bar;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,9 +16,11 @@ public class Character {
     private Direction direction;
     private boolean alive;
 
+    @JsonIgnore
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(Character.class);
 
     @JsonIgnore
-    private String owner;
+    private final String owner;
     @JsonIgnore
     private DataContainer container;
     @JsonIgnore
@@ -25,12 +28,12 @@ public class Character {
     @JsonIgnore
     private Bar mainBar;
     @JsonIgnore
-    private float velocity = 0.1F;
+    private long velocity = 1;
     @JsonIgnore
-    private int bombsCtr = 2;
+    private int bombsCtr;
     @JsonIgnore
     private int bombStrength;
-    public static int width = 28;
+    public static int width = 20;
     public static int height = 24;
 
 
@@ -44,9 +47,12 @@ public class Character {
         this.bars = getBarsByPosition(position);
         this.mainBar = bars.get(0);
         this.bombStrength = 1;
+        this.bombsCtr = 1;
     }
 
     public void plant() {
+        if (!alive)
+            return;
         if (bombsCtr > 0 && !mainBar.bombStands()) {
             bombsCtr--;
             Bomb bomb = new Bomb(GameSession.id++, mainBar, bombStrength,this);
@@ -60,7 +66,9 @@ public class Character {
     }
 
     public void move(String direction, long frametime) {
-        long distance = (long) (frametime * velocity);
+        if (!alive)
+            return;
+        long distance = velocity;
         long allowed;
         int delta;
         int xpos = position.getX() / Bar.getSize();
@@ -138,6 +146,8 @@ public class Character {
         }
         bars.stream().forEach(e -> e.removeChar(this));
         bars = getBarsByPosition(position);
+        for (Bar bar: bars)
+            checkAndApplyBonus(bar.getCoordX(),bar.getCoordY());
     }
 
     public void addBomb() {
@@ -172,8 +182,6 @@ public class Character {
         return tmp;
     }
 
-
-
     public void setDirection(Direction direction) {
         this.direction = direction;
     }
@@ -182,5 +190,38 @@ public class Character {
         alive = false;
     }
 
-    public DataContainer getContainer () {return container;}
+    public DataContainer getContainer() {
+        return container;
+    }
+
+    private void checkAndApplyBonus(int x, int y) {
+        Bar bar = container.getField().getBar(x,y);
+        if (bar.hasBonus()) {
+            Bonus bonus = bar.getBonus();
+            bar.removeBonus();
+            applyBonus(bonus);
+            container.getObjsToSend().add(bonus);
+            log.info("Character# {} got bonus {}", id, bonus.getBonusType());
+        }
+    }
+
+    private void applyBonus(Bonus bonus) {
+        switch (bonus.getBonusType()) {
+            case SPEED:
+                velocity++;
+                break;
+            case RANGE:
+                bombStrength++;
+                break;
+            case BOMBS:
+                bombsCtr++;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public String getOwner() {
+        return owner;
+    }
 }

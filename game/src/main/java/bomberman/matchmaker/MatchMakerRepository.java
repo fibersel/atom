@@ -31,7 +31,7 @@ public class MatchMakerRepository {
     /**
      * Returns user's rank. If it is a new user, adds new user to DB and returns 0.
      */
-    int getUserRank(String userName) {
+    public int getUserRank(String userName) {
         Object[] param = {userName};
         List<Integer> resultList = jdbcTemplate.query("SELECT rank FROM mm.users WHERE login = ?", param,
             (rs, rowNum) -> rs.getInt("rank"));
@@ -40,6 +40,11 @@ public class MatchMakerRepository {
             return 0;
         }
         return resultList.get(0);
+    }
+
+    public void setUserRank(String login,int rank) {
+        Object[] param = {rank,login};
+        jdbcTemplate.update("UPDATE mm.users SET rank = ? where login = ?",param);
     }
 
 

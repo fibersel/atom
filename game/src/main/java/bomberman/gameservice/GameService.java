@@ -1,7 +1,9 @@
 package bomberman.gameservice;
 
 import bomberman.matchmaker.MatchMakerRepository;
+import bomberman.model.Character;
 import bomberman.model.Message;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,8 @@ public class GameService {
         numOfGame = new AtomicLong(repository.getLastSessionId());
     }
 
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(GameService.class);
+
 
     /*
      *  curl -X POST -i http://localhost:8080/game/create -d "playerCount=4"
@@ -51,7 +55,7 @@ public class GameService {
     public ResponseEntity create(@RequestParam("playerCount") int playerCount) {
         Long id = numOfGame.incrementAndGet();
         BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
-        GameSession session = new GameSession(id,queue,playerCount);
+        GameSession session = new GameSession(this,id,queue,playerCount);
         gameQueues.put(id,queue);
         games.put(id,session);
         return ResponseEntity.ok(id.toString());
@@ -67,4 +71,22 @@ public class GameService {
         return gameQueues.get(gameId);
     }
 
+    public void deleteSession(Long gameId, Character[] players) {
+        int rank;
+        String login;
+        for (Character c: players) {
+            if (c != null) {
+                login = c.getOwner();
+                rank = repository.getUserRank(login);
+                if (c.isAlive()) {
+                    repository.setUserRank(login,Math.min(rank + 3,39));
+                } else {
+                    repository.setUserRank(login,Math.max(rank - 1,0));
+                }
+            }
+        }
+        games.remove(gameId);
+        gameQueues.remove(gameId);
+        log.info("Session {} deleted", gameId);
+    }
 }

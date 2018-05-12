@@ -1,7 +1,13 @@
 package bomberman.gameservice;
 
 
-import bomberman.model.*;
+import bomberman.model.Message;
+import bomberman.model.DataContainer;
+import bomberman.model.Topic;
+import bomberman.model.Wood;
+import bomberman.model.Fire;
+import bomberman.model.Bonus;
+import bomberman.model.Direction;
 import bomberman.model.Character;
 import bomberman.util.JsonHelper;
 import org.slf4j.LoggerFactory;
@@ -27,10 +33,14 @@ public class GameSession implements Runnable {
     private BlockingQueue<Message> inputQueue;
     private Queue<Message> buffer;
     private int numOfPlayers;
+    private int alivePlayersNum;
     private HashMap<Integer, Character> charList;
     private int connectionsNum;
     private ConnectionPool pool;
     private DataContainer container;
+    private final GameService gameService;
+    private static final String WIN_MESSAGE = "{\"topic\":\"GAME_OVER\",\"data\":\"Congratulations! You won!\"}";
+    private static final String LOSE_MESSAGE = "{\"topic\":\"GAME_OVER\",\"data\":\"Game over. You lost!\"}";
 
     public boolean isReady() {
         return numOfPlayers == connectionsNum;
@@ -40,7 +50,8 @@ public class GameSession implements Runnable {
         return container;
     }
 
-    public GameSession(long id, BlockingQueue queue, int numberOfPlayers) {
+    public GameSession(GameService gameService, long id, BlockingQueue queue, int numberOfPlayers) {
+        this.gameService = gameService;
         this.inputQueue = queue;
         this.gameId = id;
         this.numOfPlayers = numberOfPlayers;
@@ -53,23 +64,31 @@ public class GameSession implements Runnable {
     }
 
     public synchronized int addCharacter(WebSocketSession session, String owner) {
-        pool.setSession(session);
         Integer newId = id++;
+        Character character;
         switch (connectionsNum++) {
             case 0:
-                charList.put(newId, new Character(32, 32, owner, id++, container));
+                character = new Character(32, 32, owner, id++, container);
+                pool.setSession(character, session);
+                charList.put(newId, character);
                 cornerLd();
                 break;
             case 1:
-                charList.put(newId, new Character(480, 32, owner, id++, container));
+                character = new Character(480, 32, owner, id++, container);
+                pool.setSession(character, session);
+                charList.put(newId, character);
                 cornerRd();
                 break;
             case 2:
-                charList.put(newId, new Character(480, 352, owner, id++, container));
+                character = new Character(480, 352, owner, id++, container);
+                pool.setSession(character, session);
+                charList.put(newId, character);
                 cornerRu();
                 break;
             case 3:
-                charList.put(newId, new Character(32, 352, owner, id++, container));
+                character = new Character(32, 352, owner, id++, container);
+                pool.setSession(character, session);
+                charList.put(newId, character);
                 cornerLu();
                 break;
             default:
@@ -89,12 +108,14 @@ public class GameSession implements Runnable {
             Message replicaMsg = new Message(Topic.REPLICA, JsonHelper.toJson(container.getObjsToSend()));
             pool.broadcast(JsonHelper.toJson(replicaMsg));
         } catch (IOException e) {
-            log.error(e.getMessage(), e.getStackTrace());
+            log.error("Error while sending message: {} {}", e.getMessage(), e.getStackTrace());
         }
         container.getObjsToSend().clear();
         for (Character c: charList.values())
             container.getObjsToSend().add(c);
+        alivePlayersNum = numOfPlayers;
         gameLoop();
+        finish();
     }
 
     private void gameLoop() {
@@ -111,6 +132,7 @@ public class GameSession implements Runnable {
                         Character character = (Character) o;
                         if (!character.isAlive()) {
                             container.getObjsToSend().remove(o);
+                            alivePlayersNum--;
                         }
                     }
                     if (o.getClass() == Wood.class) {
@@ -119,21 +141,27 @@ public class GameSession implements Runnable {
                     if (o.getClass() == Fire.class) {
                         container.getObjsToSend().remove(o);
                     }
+                    if (o.getClass() == Bonus.class) {
+                        container.getObjsToSend().remove(o);
+                    }
                 }
 
                 for (Integer key: charList.keySet())
                     charList.get(key).setDirection(Direction.DEFAULT);
             } catch (IOException e) {
-                log.error(e.getMessage(), e.getStackTrace());
+                log.error("Error while sending message: {} {}", e.getMessage(), e.getStackTrace());
                 tickNumber++;
                 continue;
             }
 
-
+            if (alivePlayersNum < 2) {
+                log.info("Game {}: only {} players left", gameId, alivePlayersNum);
+                break;
+            }
 
             long elapsed = System.currentTimeMillis() - started;
             if (elapsed < FRAME_TIME) {
-                log.info("All tick finish at {} ms", elapsed);
+                log.debug("All tick finish at {} ms", elapsed);
                 LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(FRAME_TIME - elapsed));
             } else {
                 log.warn("tick lag {} ms", elapsed - FRAME_TIME);
@@ -141,7 +169,6 @@ public class GameSession implements Runnable {
             tickNumber++;
         }
     }
-
 
     private void act(long frametime) {
         synchronized (inputQueue) {
@@ -159,45 +186,60 @@ public class GameSession implements Runnable {
         container.getObjsToTick().stream().forEach(e -> e.tick(frametime));
     }
 
-
     public void cornerLd() {
         container.getObjsToSend().remove(container.getField().getBar(1, 1).getPlug());
         container.getObjsToSend().remove(container.getField().getBar(1, 2).getPlug());
         container.getObjsToSend().remove(container.getField().getBar(2, 1).getPlug());
-        container.getField().getBar(1, 1).clearBar();
-        container.getField().getBar(1, 2).clearBar();
-        container.getField().getBar(2, 1).clearBar();
+        container.getField().clearBar(1,1);
+        container.getField().clearBar(1,2);
+        container.getField().clearBar(2,1);
     }
-
 
     public void cornerRd() {
         container.getObjsToSend().remove(container.getField().getBar(15, 1).getPlug());
         container.getObjsToSend().remove(container.getField().getBar(15, 2).getPlug());
         container.getObjsToSend().remove(container.getField().getBar(14, 1).getPlug());
-        container.getField().getBar(15, 1).clearBar();
-        container.getField().getBar(15, 2).clearBar();
-        container.getField().getBar(14, 1).clearBar();
-
-
+        container.getField().clearBar(15,1);
+        container.getField().clearBar(15,2);
+        container.getField().clearBar(14,1);
     }
 
     private void cornerRu() {
         container.getObjsToSend().remove(container.getField().getBar(15, 11).getPlug());
         container.getObjsToSend().remove(container.getField().getBar(15, 10).getPlug());
         container.getObjsToSend().remove(container.getField().getBar(14, 11).getPlug());
-        container.getField().getBar(15, 11).clearBar();
-        container.getField().getBar(15, 10).clearBar();
-        container.getField().getBar(14, 11).clearBar();
+        container.getField().clearBar(15,11);
+        container.getField().clearBar(15,10);
+        container.getField().clearBar(14,11);
     }
-
 
     private void cornerLu() {
         container.getObjsToSend().remove(container.getField().getBar(1, 11).getPlug());
         container.getObjsToSend().remove(container.getField().getBar(1, 10).getPlug());
         container.getObjsToSend().remove(container.getField().getBar(2, 11).getPlug());
-        container.getField().getBar(1, 11).clearBar();
-        container.getField().getBar(1, 10).clearBar();
-        container.getField().getBar(2, 11).clearBar();
+        container.getField().clearBar(1,11);
+        container.getField().clearBar(1,10);
+        container.getField().clearBar(2,11);
     }
 
+    private void finish() {
+        log.info("Game {} is finishing", gameId);
+        Character[] chars = new Character[4];
+        int ctr = 0;
+        for (Character character : charList.values()) {
+            try {
+                if (character.isAlive()) {
+                    pool.sendMessage(character, WIN_MESSAGE);
+                } else {
+                    pool.sendMessage(character, LOSE_MESSAGE);
+                }
+            } catch (IOException e) {
+                log.error("Error while sending message: {} {}", e.getMessage(), e.getStackTrace());
+            }
+            chars[ctr++] = character;
+        }
+        pool.closeAllConnections();
+        gameService.deleteSession(gameId,chars);
+        log.info("Game {} finished", gameId);
+    }
 }

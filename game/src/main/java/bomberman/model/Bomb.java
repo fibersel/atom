@@ -18,7 +18,7 @@ public class Bomb implements Tickable {
     private static int size = 28;
 
     @JsonIgnore
-    private final long cooldown= 3000;
+    private final long cooldown = 3000;
     @JsonIgnore
     private Bar bar;
     @JsonIgnore
@@ -94,6 +94,9 @@ public class Bomb implements Tickable {
                 b.getBomb().dropCooldown();
                 b.removeBomb();
             }
+            if (b.hasBonus()) {
+                owner.getContainer().getObjsToSend().add(b.getBonus());
+            }
         }
         barsToBlow.clear();
         owner.getContainer().getObjsToSend().remove(this);
@@ -102,33 +105,33 @@ public class Bomb implements Tickable {
     }
 
     void getBarsInDirections() {
-        Bar b;
+        Bar bar1;
         for (int i = 0; i < 4; i++) {
             for (int j = 1; strength - j >= 0; j++) {
                 switch (i) {
                     case 0:
-                        b = owner.getContainer().getField().getBar(bar.getCoordX() + j, bar.getCoordY());
+                        bar1 = owner.getContainer().getField().getBar(bar.getCoordX() + j, bar.getCoordY());
                         break;
                     case 1:
-                        b = owner.getContainer().getField().getBar(bar.getCoordX() - j, bar.getCoordY());
+                        bar1 = owner.getContainer().getField().getBar(bar.getCoordX() - j, bar.getCoordY());
                         break;
                     case 2:
-                        b = owner.getContainer().getField().getBar(bar.getCoordX(), bar.getCoordY() + j);
+                        bar1 = owner.getContainer().getField().getBar(bar.getCoordX(), bar.getCoordY() + j);
                         break;
                     case 3:
-                        b = owner.getContainer().getField().getBar(bar.getCoordX(), bar.getCoordY() - j);
+                        bar1 = owner.getContainer().getField().getBar(bar.getCoordX(), bar.getCoordY() - j);
                         break;
                     default:
-                        b = bar;
+                        bar1 = bar;
                 }
-                if (b.isWall()) {
+                if (bar1.isWall()) {
                     break;
                 }
-                if (b.isWood()) {
-                    barsToBlow.add(b);
+                if (bar1.isWood()) {
+                    barsToBlow.add(bar1);
                     break;
                 }
-                barsToBlow.add(b);
+                barsToBlow.add(bar1);
             }
         }
     }
