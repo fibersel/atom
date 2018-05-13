@@ -76,6 +76,7 @@ public class MatchMaker {
         while (!playersId.containsKey(name))
             Thread.sleep(10);
         Long id = playersId.get(name);
+        playersId.remove(name);
         log.info("User {} got gameID {}", name, id);
         return ResponseEntity.ok().body(id.toString());
     }
